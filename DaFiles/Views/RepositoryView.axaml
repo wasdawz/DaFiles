@@ -1,0 +1,34 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:local="using:DaFiles.Views"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:ui="using:FluentAvalonia.UI.Controls"
+             xmlns:vm="using:DaFiles.ViewModels"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="DaFiles.Views.RepositoryView"
+             x:DataType="vm:RepositoryViewModel"
+             Background="Transparent">
+    <Grid>
+      <DockPanel>
+          <DockPanel DockPanel.Dock="Top" Margin="6,6,8,6">
+              <Button Theme="{StaticResource TransparentButton}" Margin="0,0,6,0" VerticalAlignment="Stretch" Command="{Binding DirectoryNavigation.GoBackCommand}"><ui:SymbolIcon Symbol="Back" /></Button>
+              <Button Theme="{StaticResource TransparentButton}" Margin="0,0,6,0" VerticalAlignment="Stretch" Command="{Binding DirectoryNavigation.GoForwardCommand}"><ui:SymbolIcon Symbol="Forward" /></Button>
+              <Button Theme="{StaticResource TransparentButton}" Margin="0,0,6,0" VerticalAlignment="Stretch" Command="{Binding RefreshCurrentDirectoryCommand}"><ui:SymbolIcon Symbol="Refresh" /></Button>
+              <TextBox Name="PathTextBox" Text="{Binding DirectoryNavigation.CurrentItem.Directory.Path, Mode=OneWay}"
+                       LostFocus="PathTextBox_LostFocus">
+			      <TextBox.KeyBindings>
+				      <KeyBinding Command="{Binding DirectoryNavigation.SetTopItemCommand}" CommandParameter="{Binding #PathTextBox.Text}" Gesture="Enter" />
+                  </TextBox.KeyBindings>
+              </TextBox>
+          </DockPanel>
+	      <local:DirectoryView DataContext="{Binding DirectoryNavigation.CurrentItem}" />
+      </DockPanel>
+
+	  <ui:InfoBar Message="{Binding ErrorMessage}" Severity="Error" IsClosable="True"
+                   IsOpen="{Binding ErrorMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}}"
+                   CloseButtonCommand="{Binding ClearMessageCommand}"
+                   HorizontalAlignment="Center" VerticalAlignment="Bottom"
+                   Margin="0,0,0,4" />
+  </Grid>
+</UserControl>

@@ -1,0 +1,31 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:models="using:DaFiles.Models"
+             xmlns:vm="clr-namespace:DaFiles.ViewModels"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="DaFiles.Views.DirectoryView"
+             x:DataType="vm:DirectoryViewModel">
+    <UserControl.Styles>
+        <!-- Hide cell focus border -->
+        <Style Selector="DataGrid:focus DataGridCell:current /template/ Grid#FocusVisual"> 
+            <Setter Property="IsVisible" Value="False" /> 
+        </Style> 
+		<Style Selector="DataGridCell">
+			<Setter Property="FontSize" Value="12"/>
+        </Style>
+        <Style Selector="DataGridRow">
+			<Setter Property="Height" Value="22"/>
+        </Style>
+    </UserControl.Styles>
+
+    <DataGrid ItemsSource="{Binding Directory.Items}" FontFamily="Segoe UI Regular">
+		<DataGrid.Columns>
+			<DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="300" IsReadOnly="True" />
+			<DataGridTextColumn Header="Modified" Binding="{Binding ModifiedDate, StringFormat=G}" IsReadOnly="True" />
+			<DataGridTextColumn Header="Type" Binding="{Binding Converter={StaticResource DirectoryItemTypeToStringConverter}}" Width="100" IsReadOnly="True" />
+			<DataGridTextColumn Header="Size" Binding="{Binding Size, Mode=OneWay, Converter={StaticResource ByteSizeToStringConverter}}" Width="100" IsReadOnly="True" />
+        </DataGrid.Columns>
+    </DataGrid>
+</UserControl>

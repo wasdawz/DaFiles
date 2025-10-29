@@ -1,0 +1,12 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:local="using:DaFiles.Views"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="clr-namespace:DaFiles.ViewModels"
+             mc:Ignorable="d"
+             x:Class="DaFiles.Views.MainView"
+             x:DataType="vm:MainViewModel"
+             d:DesignWidth="800" d:DesignHeight="500">
+  <local:RepositoryView DataContext="{Binding CurrentRepositoryView}"/>
+</UserControl>
