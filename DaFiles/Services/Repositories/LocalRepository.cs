@@ -52,7 +52,7 @@ public class LocalRepository : IRepository
         return items;
     }
 
-    public string GetRootPath() => "E:\\";
+    public string GetRootPath() => "\\";
 
     public string CombinePath(string path1, string path2) => System.IO.Path.Combine(path1, path2);
 
