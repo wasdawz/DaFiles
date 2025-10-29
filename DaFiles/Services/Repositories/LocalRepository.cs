@@ -15,7 +15,9 @@ public class LocalRepository : IRepository
     {
         IStorageFolder folder = await GetFolderFromPathAsync(path);
         List<DirectoryItem> items = await ReadDirectoryContentsAsync(folder);
-        string actualPath = folder.Path.IsAbsoluteUri ? folder.Path.LocalPath : folder.Path.OriginalString;
+        string actualPath = folder.Path.IsAbsoluteUri
+            ? folder.Path.LocalPath.TrimEnd('\\')
+            : folder.Path.OriginalString;
         return new Directory(actualPath, this, items);
     }
 
