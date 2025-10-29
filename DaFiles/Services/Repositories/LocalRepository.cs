@@ -13,17 +13,24 @@ public class LocalRepository : IRepository
 
     public async Task<Directory> ReadDirectoryAsync(string path)
     {
-        var items = await ReadDirectoryContentsAsync(path);
-        return new Directory(path, this, items);
+        IStorageFolder folder = await GetFolderFromPathAsync(path);
+        List<DirectoryItem> items = await ReadDirectoryContentsAsync(folder);
+        string actualPath = folder.Path.IsAbsoluteUri ? folder.Path.LocalPath : folder.Path.OriginalString;
+        return new Directory(actualPath, this, items);
     }
 
     public async Task<List<DirectoryItem>> ReadDirectoryContentsAsync(string path)
     {
-        var storage = GetStorageProvider();
+        IStorageFolder folder = await GetFolderFromPathAsync(path);
+        return await ReadDirectoryContentsAsync(folder);
+    }
 
-        if (await storage.TryGetFolderFromPathAsync(path) is not IStorageFolder folder)
-            throw new ArgumentException("Local folder at this path doesn't exist.");
+    public string GetRootPath() => "\\";
 
+    public string CombinePath(string path1, string path2) => System.IO.Path.Combine(path1, path2);
+
+    private static async Task<List<DirectoryItem>> ReadDirectoryContentsAsync(IStorageFolder folder)
+    {
         List<DirectoryItem> items = [];
 
         await foreach (var item in folder.GetItemsAsync())
@@ -52,9 +59,12 @@ public class LocalRepository : IRepository
         return items;
     }
 
-    public string GetRootPath() => "\\";
-
-    public string CombinePath(string path1, string path2) => System.IO.Path.Combine(path1, path2);
+    private async Task<IStorageFolder> GetFolderFromPathAsync(string path)
+    {
+        IStorageProvider storage = GetStorageProvider();
+        return await storage.TryGetFolderFromPathAsync(path)
+            ?? throw new ArgumentException("Local folder at this path doesn't exist.");
+    }
 
     private IStorageProvider GetStorageProvider()
     {
