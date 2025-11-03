@@ -46,16 +46,8 @@ public class LocalRepository : IRepository
 
             var itemProperties = await item.GetBasicPropertiesAsync();
             var itemSize = itemType == DirectoryItemType.File ? itemProperties.Size : null;
-            string? extension = null;
 
-            if (itemType == DirectoryItemType.File)
-            {
-                int nameDotIndex = item.Name.LastIndexOf('.');
-                if (nameDotIndex > -1)
-                    extension = item.Name[(nameDotIndex + 1)..];
-            }
-
-            items.Add(new(itemType, item.Name, itemProperties.DateModified, extension, itemSize));
+            items.Add(new(itemType, item.Name, itemProperties.DateModified, itemSize));
         }
 
         return items;

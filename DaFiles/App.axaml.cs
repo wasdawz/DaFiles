@@ -3,7 +3,7 @@ using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Data.Core.Plugins;
 using Avalonia.Markup.Xaml;
-using System;
+using DaFiles.Models;
 using DaFiles.Services.Repositories;
 using DaFiles.ViewModels;
 using DaFiles.Views;
@@ -24,10 +24,9 @@ public partial class App : Application
         BindingPlugins.DataValidators.RemoveAt(0);
 
         LocalRepository localRepository = new();
-        MainViewModel mainViewModel = new()
-        {
-            CurrentRepositoryView = new(new("This device", localRepository))
-        };
+
+        MainViewModel mainViewModel = new();
+        mainViewModel.AddRepository(new Repository("This device", localRepository));
 
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {

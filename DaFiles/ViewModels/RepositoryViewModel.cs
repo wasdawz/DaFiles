@@ -16,6 +16,8 @@ public partial class RepositoryViewModel : ViewModelBase
     [ObservableProperty]
     private string? errorMessage;
 
+    private bool _isInitialized = false;
+
     public RepositoryViewModel(Repository repository)
     {
         Repository = repository;
@@ -23,7 +25,14 @@ public partial class RepositoryViewModel : ViewModelBase
         DirectoryNavigation.CurrentItemChanged += ClearMessage;
     }
 
-    public async Task LoadAsync() => await DirectoryNavigation.SetTopItemAsync(Repository.Service.GetRootPath());
+    public async Task EnsureInitializedAsync()
+    {
+        if (!_isInitialized)
+        {
+            await DirectoryNavigation.SetTopItemAsync(Repository.Service.GetRootPath());
+            _isInitialized = true;
+        }
+    }
 
     public DirectoryViewModel? GetCurrentDirectory() => DirectoryNavigation.CurrentItem;
 
@@ -55,6 +64,8 @@ public partial class RepositoryViewModel : ViewModelBase
             ErrorMessage = ex.Message;
         }
     }
+
+    public override string ToString() => Repository.Name;
 
     [RelayCommand]
     private void ClearMessage()

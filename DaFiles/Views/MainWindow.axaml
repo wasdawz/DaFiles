@@ -8,7 +8,7 @@
         x:Class="DaFiles.Views.MainWindow"
         Icon="/Assets/avalonia-logo.ico"
         Title="DaFiles"
-        Width="800" Height="500"
+        Width="800" Height="550"
         WindowStartupLocation="CenterScreen"
         Focusable="True">
         <views:MainView />

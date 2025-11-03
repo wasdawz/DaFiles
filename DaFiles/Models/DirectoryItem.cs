@@ -10,19 +10,34 @@ public enum DirectoryItemType
     Folder,
 }
 
-public partial class DirectoryItem(DirectoryItemType itemType, string name, DateTimeOffset? modifiedDate, string? extension, ulong? size) : ObservableObject
+public partial class DirectoryItem : ObservableObject
 {
-    public DirectoryItemType ItemType { get; } = itemType;
+    public DirectoryItemType ItemType { get; }
 
     [ObservableProperty]
-    private string name = name;
+    private string name;
 
     [ObservableProperty]
-    private DateTimeOffset? modifiedDate = modifiedDate;
+    private DateTimeOffset? modifiedDate;
 
     [ObservableProperty]
-    private string? extension = extension;
+    private string? extension;
 
     [ObservableProperty]
-    private ulong? size = size;
+    private ulong? size;
+
+    public DirectoryItem(DirectoryItemType itemType, string name, DateTimeOffset? modifiedDate, ulong? size)
+    {
+        ItemType = itemType;
+        this.name = name;
+        this.modifiedDate = modifiedDate;
+        this.size = size;
+
+        if (itemType == DirectoryItemType.File)
+        {
+            int nameDotIndex = name.LastIndexOf('.');
+            if (nameDotIndex > -1)
+                extension = name[(nameDotIndex + 1)..];
+        }
+    }
 }

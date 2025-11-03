@@ -1,0 +1,30 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="using:DaFiles.ViewModels"
+             xmlns:models="using:DaFiles.Models"
+             mc:Ignorable="d"
+             x:Class="DaFiles.Views.RepositoryConnectView"
+             x:DataType="vm:RepositoryConnectViewModel"
+             Width="280">
+    <UserControl.Styles>
+		<Style Selector="StackPanel > TextBlock:nth-child(n+2)">
+			<Setter Property="Margin" Value="0,8,0,0"/>
+        </Style>
+    </UserControl.Styles>
+    <StackPanel Spacing="6">
+        <TextBlock>Protocol</TextBlock>
+        <ComboBox SelectedItem="{Binding RepositoryType}" ItemsSource="{Binding Source={x:Type models:RemoteRepositoryType}, Converter={StaticResource EnumToListConverter}}"/>
+        <TextBlock>Host name</TextBlock>
+        <TextBox Text="{Binding HostUrl}"/>
+        <TextBlock>Username</TextBlock>
+        <TextBox Text="{Binding Username}"/>
+        <TextBlock>Password</TextBlock>
+        <TextBox Name="PasswordTextBox" PasswordChar="*"/>
+        <TextBlock>Root path</TextBlock>
+        <TextBox Text="{Binding RootPath}"/>
+        <TextBlock Text="{Binding ErrorMessage}" IsVisible="{Binding ErrorMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                   TextWrapping="Wrap" Foreground="{DynamicResource SystemFillColorCautionBrush}"/>
+    </StackPanel>
+</UserControl>

@@ -38,13 +38,4 @@ public partial class RepositoryView : UserControl
 
         e.Handled = true;
     }
-
-    private void PathTextBox_LostFocus(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
-    {
-        if (ViewModel is not RepositoryViewModel viewModel ||
-            sender is not TextBox textBox)
-            return;
-
-        textBox.Text = viewModel?.GetCurrentDirectory()?.Directory.Path;
-    }
 }
