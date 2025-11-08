@@ -22,7 +22,7 @@ public partial class MainView : UserControl
         textBox.Text = viewModel?.CurrentRepositoryView?.GetCurrentDirectory()?.Directory.Path;
     }
 
-    private async void ConnectButton_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+    private async void AddRemoteDirectoryButton_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
     {
         RepositoryConnectViewModel connectViewModel = new();
         RepositoryConnectView connectView = new()

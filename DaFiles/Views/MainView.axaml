@@ -15,9 +15,17 @@
                 <Button Theme="{StaticResource TransparentButton}" Margin="0,0,6,0" VerticalAlignment="Stretch" Command="{Binding CurrentRepositoryView.DirectoryNavigation.GoBackCommand}"><ui:SymbolIcon Symbol="Back" /></Button>
                 <Button Theme="{StaticResource TransparentButton}" Margin="0,0,6,0" VerticalAlignment="Stretch" Command="{Binding CurrentRepositoryView.DirectoryNavigation.GoForwardCommand}"><ui:SymbolIcon Symbol="Forward" /></Button>
                 <Button Theme="{StaticResource TransparentButton}" Margin="0,0,6,0" VerticalAlignment="Stretch" Command="{Binding CurrentRepositoryView.RefreshCurrentDirectoryCommand}"><ui:SymbolIcon Symbol="Refresh" /></Button>
-                <Button Width="140" Content="{Binding CurrentRepositoryView}" VerticalAlignment="Stretch" Margin="0,0,6,0">
+                <Button Theme="{StaticResource TransparentButton}" Margin="0,0,6,0" VerticalAlignment="Stretch">
 				    <Button.Flyout>
-					    <ui:FAMenuFlyout Placement="BottomEdgeAlignedRight" ItemsSource="{Binding Repositories}">
+                        <ui:FAMenuFlyout>
+                            <ui:MenuFlyoutItem Text="Add a remote directory" Click="AddRemoteDirectoryButton_Click"/>
+                        </ui:FAMenuFlyout>
+                    </Button.Flyout>
+                    <ui:SymbolIcon Symbol="More" />
+                </Button>
+                <DropDownButton Width="140" Content="{Binding CurrentRepositoryView}" VerticalAlignment="Stretch" Margin="0,0,6,0">
+				    <DropDownButton.Flyout>
+					    <ui:FAMenuFlyout Placement="BottomEdgeAlignedLeft" ItemsSource="{Binding Repositories}">
 							<ui:FAMenuFlyout.ItemContainerTheme>
 								<ControlTheme TargetType="ui:MenuFlyoutItem" BasedOn="{StaticResource {x:Type ui:MenuFlyoutItem}}">
 									<Setter Property="Command" Value="{Binding $parent[local:MainView].((vm:MainViewModel)DataContext).SelectRepositoryCommand}"/>
@@ -25,16 +33,8 @@
                                 </ControlTheme>
                             </ui:FAMenuFlyout.ItemContainerTheme>
                         </ui:FAMenuFlyout>
-                    </Button.Flyout>
-                </Button>
-                <Button Margin="0,0,6,0" VerticalAlignment="Stretch">
-				    <Button.Flyout>
-					    <MenuFlyout Placement="BottomEdgeAlignedRight">
-						    <MenuItem Header="Connect..." Click="ConnectButton_Click" />
-                        </MenuFlyout>
-                    </Button.Flyout>
-                    <ui:SymbolIcon Symbol="ChevronDown" />
-                </Button>
+                    </DropDownButton.Flyout>
+                </DropDownButton>
                 <TextBox Name="PathTextBox" Text="{Binding CurrentRepositoryView.DirectoryNavigation.CurrentItem.Directory.Path, Mode=OneWay}"
                          LostFocus="PathTextBox_LostFocus">
                     <TextBox.KeyBindings>
