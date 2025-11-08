@@ -5,5 +5,5 @@ namespace DaFiles.Services;
 
 public interface IDataStore<T>
 {
-    Task SaveAsync(IEnumerable<T> repositories);
+    Task SaveAsync(IEnumerable<T> items);
 }
