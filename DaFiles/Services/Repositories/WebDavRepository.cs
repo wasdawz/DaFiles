@@ -7,7 +7,7 @@ using WebDav;
 
 namespace DaFiles.Services.Repositories;
 
-public class WebDavRepository : IRepository
+public sealed class WebDavRepository : IRepository
 {
     private readonly WebDavClient _client;
     private readonly WebDavRepositoryConfig _config;
@@ -64,4 +64,6 @@ public class WebDavRepository : IRepository
     {
         return $"{path1.TrimEnd('/')}/{path2.TrimStart('/')}";
     }
+
+    public void Dispose() => _client.Dispose();
 }

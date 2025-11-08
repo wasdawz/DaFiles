@@ -58,4 +58,13 @@ public partial class MainView : UserControl
 
         await dialog.ShowAsync(TopLevel.GetTopLevel(this));
     }
+
+    private async void DeleteRemoteDirectoryButton_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+    {
+        if (ViewModel is MainViewModel mainViewModel &&
+            mainViewModel.CurrentRepositoryView is RepositoryViewModel currentRepositoryView)
+        {
+            await mainViewModel.DeleteRepositoryAsync(currentRepositoryView);
+        }
+    }
 }

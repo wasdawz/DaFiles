@@ -7,7 +7,7 @@ using DaFiles.Models;
 
 namespace DaFiles.Services.Repositories;
 
-public interface IRepository
+public interface IRepository : IDisposable
 {
     public string GetRootPath();
     public string CombinePath(string path1, string path2);

@@ -13,7 +13,10 @@ namespace DaFiles.ViewModels;
 public partial class MainViewModel : ViewModelBase
 {
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(IsCurrentRepositoryEditable))]
     private RepositoryViewModel? currentRepositoryView;
+
+    public bool IsCurrentRepositoryEditable => CurrentRepositoryView?.Repository.Config.IsSaveable ?? false;
 
     public ReadOnlyObservableCollection<RepositoryViewModel> Repositories { get; }
 
@@ -66,5 +69,13 @@ public partial class MainViewModel : ViewModelBase
 
         await _repositoryStore.SaveAsync(Repositories.Select(vm => vm.Repository));
         return true;
+    }
+
+    public async Task DeleteRepositoryAsync(RepositoryViewModel repositoryViewModel)
+    {
+        _repositories.Remove(repositoryViewModel);
+        repositoryViewModel.Repository.Dispose();
+        await _repositoryStore.DeleteAsync(repositoryViewModel.Repository);
+        CurrentRepositoryView = _repositories.FirstOrDefault();
     }
 }

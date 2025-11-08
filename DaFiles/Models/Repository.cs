@@ -1,6 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
-using System.Threading.Tasks;
 using DaFiles.Services.Repositories;
+using System;
+using System.Threading.Tasks;
 
 namespace DaFiles.Models;
 
@@ -9,7 +10,7 @@ public enum RemoteRepositoryType
     WebDav,
 }
 
-public partial class Repository(RepositoryConfig config) : ObservableObject
+public sealed partial class Repository(RepositoryConfig config) : ObservableObject, IDisposable
 {
     public RepositoryConfig Config { get; } = config;
 
@@ -21,4 +22,6 @@ public partial class Repository(RepositoryConfig config) : ObservableObject
     {
         await Service.ReadDirectoryContentsAsync(Service.GetRootPath());
     }
+
+    public void Dispose() => Service.Dispose();
 }

@@ -33,7 +33,9 @@ public class Repositories(string storagePath, Func<TopLevel?> topLevelGetter, IS
 
         foreach (RepositoryConfig config in repositories.Select(r => r.Config).Where(c => c.IsSaveable))
         {
-            if (await folder.CreateFileAsync($"{config.Id}.json") is not IStorageFile file)
+            string fileName = GetDataFileName(config.Id);
+
+            if (await folder.CreateFileAsync(fileName) is not IStorageFile file)
                 continue;
 
             if (config.Password is SecureString password)
@@ -75,4 +77,20 @@ public class Repositories(string storagePath, Func<TopLevel?> topLevelGetter, IS
 
         return items;
     }
+
+    public async Task DeleteAsync(Repository repository)
+    {
+        if (_topLevelGetter()?.StorageProvider is not IStorageProvider storageProvider ||
+            await storageProvider.TryGetFolderFromPathAsync(_storagePath) is not IStorageFolder folder)
+            return;
+
+        string fileName = GetDataFileName(repository.Config.Id);
+
+        if (await folder.GetFileAsync(fileName) is IStorageFile file)
+            await file.DeleteAsync();
+
+        _secretStore.Delete(repository.Config.Id);
+    }
+
+    private static string GetDataFileName(string id) => $"{id}.json";
 }

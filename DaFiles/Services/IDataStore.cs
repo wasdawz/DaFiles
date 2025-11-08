@@ -6,4 +6,6 @@ namespace DaFiles.Services;
 public interface IDataStore<T>
 {
     Task SaveAsync(IEnumerable<T> items);
+
+    Task DeleteAsync(T item);
 }

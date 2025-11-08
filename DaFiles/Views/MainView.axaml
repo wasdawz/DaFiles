@@ -18,6 +18,10 @@
                 <Button Theme="{StaticResource TransparentButton}" Margin="0,0,6,0" VerticalAlignment="Stretch">
 				    <Button.Flyout>
                         <ui:FAMenuFlyout>
+                            <ui:MenuFlyoutSubItem Text="Remote directory" IsVisible="{Binding IsCurrentRepositoryEditable}">
+                                <ui:MenuFlyoutItem Text="Delete" IconSource="Delete" Click="DeleteRemoteDirectoryButton_Click"/>
+                            </ui:MenuFlyoutSubItem>
+                            <ui:MenuFlyoutSeparator IsVisible="{Binding IsCurrentRepositoryEditable}"/>
                             <ui:MenuFlyoutItem Text="Add a remote directory" Click="AddRemoteDirectoryButton_Click"/>
                         </ui:FAMenuFlyout>
                     </Button.Flyout>

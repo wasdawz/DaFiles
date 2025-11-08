@@ -7,7 +7,7 @@ using DaFiles.Models;
 
 namespace DaFiles.Services.Repositories;
 
-public class LocalRepository(Func<TopLevel?> topLevelGetter) : IRepository
+public sealed class LocalRepository(Func<TopLevel?> topLevelGetter) : IRepository
 {
     private readonly Func<TopLevel?> _topLevelGetter = topLevelGetter;
 
@@ -67,4 +67,6 @@ public class LocalRepository(Func<TopLevel?> topLevelGetter) : IRepository
 
         return topLevel.StorageProvider;
     }
+
+    public void Dispose() { }
 }
