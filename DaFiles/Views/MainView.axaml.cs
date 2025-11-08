@@ -49,7 +49,7 @@ public partial class MainView : UserControl
 
             (dialog.Content as RepositoryConnectView)?.ReadPasswordSecureToViewModel();
 
-            if (!await mainViewModel.TryAddRepositoryAsync(connectViewModel, select: true))
+            if (!await mainViewModel.TryAddNewRepositoryAsync(connectViewModel, select: true))
                 e.Cancel = true;
 
             d.Complete();

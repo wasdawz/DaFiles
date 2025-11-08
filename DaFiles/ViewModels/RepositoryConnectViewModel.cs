@@ -1,6 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using DaFiles.Models;
-using DaFiles.Services.Repositories;
 using System;
 using System.Security;
 
@@ -34,9 +33,8 @@ public partial class RepositoryConnectViewModel : ViewModelBase
 
         if (RepositoryType == RemoteRepositoryType.WebDav)
         {
-            WebDavRepositoryConfig config = new(HostUrl, Username, Password, RootPath);
-            WebDavRepository webDavRepository = new(config);
-            repositoryModel = new("WebDAV", webDavRepository);
+            WebDavRepositoryConfig config = new(Guid.NewGuid().ToString(), "WebDAV", HostUrl, Username, Password, RootPath);
+            repositoryModel = new(config);
         }
         else
             throw new NotImplementedException();

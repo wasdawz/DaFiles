@@ -1,6 +1,8 @@
 ﻿using System;
 
 using Avalonia;
+using DaFiles.Desktop.Services;
+using DaFiles.Services;
 
 namespace DaFiles.Desktop;
 
@@ -15,9 +17,18 @@ class Program
 
     // Avalonia configuration, don't remove; also used by visual designer.
     public static AppBuilder BuildAvaloniaApp()
-        => AppBuilder.Configure<App>()
+    {
+        ISecretStore secretStore;
+
+        if (OperatingSystem.IsWindowsVersionAtLeast(5, 1, 2600))
+            secretStore = new WindowsCredentialManagerSecretStore(App.AppName);
+        else
+            throw new PlatformNotSupportedException();
+
+        return AppBuilder.Configure<App>(() => new(secretStore))
             .UsePlatformDetect()
             .WithInterFont()
             .LogToTrace();
+    }
 
 }

@@ -9,14 +9,13 @@ public enum RemoteRepositoryType
     WebDav,
 }
 
-public partial class Repository(string name, IRepository service) : ObservableObject
+public partial class Repository(RepositoryConfig config) : ObservableObject
 {
-    [ObservableProperty]
-    private string name = name;
+    public RepositoryConfig Config { get; } = config;
 
-    public IRepository Service { get; } = service;
+    public IRepository Service { get; } = config.CreateService();
 
-    public override string ToString() => Name;
+    public override string ToString() => Config.Name;
 
     public async Task TestConnectionOrThrowAsync()
     {

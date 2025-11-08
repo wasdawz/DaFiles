@@ -7,9 +7,9 @@ using DaFiles.Models;
 
 namespace DaFiles.Services.Repositories;
 
-public class LocalRepository : IRepository
+public class LocalRepository(Func<TopLevel?> topLevelGetter) : IRepository
 {
-    public Func<TopLevel?>? TopLevelGetter { private get; set; }
+    private readonly Func<TopLevel?> _topLevelGetter = topLevelGetter;
 
     public async Task<Directory> ReadDirectoryAsync(string path)
     {
@@ -62,7 +62,7 @@ public class LocalRepository : IRepository
 
     private IStorageProvider GetStorageProvider()
     {
-        if (TopLevelGetter?.Invoke() is not TopLevel topLevel)
+        if (_topLevelGetter() is not TopLevel topLevel)
             throw new InvalidOperationException("TopLevel not provided.");
 
         return topLevel.StorageProvider;

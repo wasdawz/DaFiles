@@ -65,7 +65,7 @@ public partial class RepositoryViewModel : ViewModelBase
         }
     }
 
-    public override string ToString() => Repository.Name;
+    public override string ToString() => Repository.Config.Name;
 
     [RelayCommand]
     private void ClearMessage()
