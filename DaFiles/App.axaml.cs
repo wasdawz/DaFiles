@@ -46,6 +46,10 @@ public partial class App(ISecretStore secretStore) : Application
             rootControl = view;
             topLevelGetter = () => TopLevel.GetTopLevel(singleViewPlatform.MainView);
         }
+        else if (ApplicationLifetime is null && Design.IsDesignMode)
+        {
+            return;
+        }
         else
             throw new NotImplementedException();
 
