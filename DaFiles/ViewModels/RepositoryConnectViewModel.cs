@@ -11,6 +11,9 @@ public partial class RepositoryConnectViewModel : ViewModelBase
     private RemoteRepositoryType repositoryType;
 
     [ObservableProperty]
+    private string name = string.Empty;
+
+    [ObservableProperty]
     private string hostUrl = string.Empty;
 
     [ObservableProperty]
@@ -33,7 +36,7 @@ public partial class RepositoryConnectViewModel : ViewModelBase
 
         if (RepositoryType == RemoteRepositoryType.WebDav)
         {
-            WebDavRepositoryConfig config = new(Guid.NewGuid().ToString(), "WebDAV", HostUrl, Username, Password, RootPath);
+            WebDavRepositoryConfig config = new(Guid.NewGuid().ToString(), Name, HostUrl, Username, Password, RootPath);
             repositoryModel = new(config);
         }
         else

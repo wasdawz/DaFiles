@@ -14,6 +14,8 @@
         </Style>
     </UserControl.Styles>
     <StackPanel Spacing="6">
+        <TextBlock>Name</TextBlock>
+        <TextBox Text="{Binding Name}"/>
         <TextBlock>Protocol</TextBlock>
         <ComboBox SelectedItem="{Binding RepositoryType}" ItemsSource="{Binding Source={x:Type models:RemoteRepositoryType}, Converter={StaticResource EnumToListConverter}}"/>
         <TextBlock>Host name</TextBlock>
