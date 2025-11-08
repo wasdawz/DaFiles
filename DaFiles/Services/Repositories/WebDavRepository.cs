@@ -42,14 +42,15 @@ public class WebDavRepository : IRepository
 
         foreach (WebDavResource resource in result.Resources)
         {
-            if (resource.Uri is null ||
-                resource.Uri == path ||
-                (resource.Uri.Length - path.Length == 1 && resource.Uri.EndsWith('/')))
+            if (HttpUtility.UrlDecode(resource.Uri) is not string resourceUri ||
+                resourceUri is null ||
+                resourceUri == path ||
+                (resourceUri.Length - path.Length == 1 && resourceUri.EndsWith('/')))
                 continue;
 
             DirectoryItemType itemType = resource.IsCollection ? DirectoryItemType.Folder : DirectoryItemType.File;
             ulong? itemSize = (ulong?)resource.ContentLength;
-            string itemName = HttpUtility.UrlDecode(resource.Uri[path.Length..].Trim('/'));
+            string itemName = resourceUri[path.Length..].Trim('/');
 
             items.Add(new(itemType, itemName, resource.LastModifiedDate, itemSize));
         }
