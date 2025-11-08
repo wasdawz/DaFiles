@@ -8,5 +8,5 @@ public interface ISecretStore
 
     void Write(string key, SecureString secret);
 
-    bool Remove(string key);
+    bool Delete(string key);
 }

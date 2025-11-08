@@ -87,7 +87,7 @@ public class WindowsCredentialManagerSecretStore(string identifier) : ISecretSto
         }
     }
 
-    public bool Remove(string key)
+    public bool Delete(string key)
     {
         string targetName = GetTargetName(key);
         
