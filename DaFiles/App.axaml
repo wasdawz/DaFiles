@@ -8,6 +8,7 @@
 		<converters:ByteSizeToStringConverter x:Key="ByteSizeToStringConverter"/>	
         <converters:DirectoryItemTypeToStringConverter x:Key="DirectoryItemTypeToStringConverter"/>
         <converters:EnumToListConverter x:Key="EnumToListConverter"/>
+        <converters:SecureStringToStringConverter x:Key="SecureStringToStringConverter"/>
     </Application.Resources>
     <Application.Styles>
         <sty:FluentAvaloniaTheme />

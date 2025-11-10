@@ -19,6 +19,7 @@
 				    <Button.Flyout>
                         <ui:FAMenuFlyout>
                             <ui:MenuFlyoutSubItem Text="Remote directory" IsVisible="{Binding IsCurrentRepositoryEditable}">
+                                <ui:MenuFlyoutItem Text="Configure" IconSource="Setting" Click="ConfigureRemoteDirectoryButton_Click"/>
                                 <ui:MenuFlyoutItem Text="Delete" IconSource="Delete" Click="DeleteRemoteDirectoryButton_Click"/>
                             </ui:MenuFlyoutSubItem>
                             <ui:MenuFlyoutSeparator IsVisible="{Binding IsCurrentRepositoryEditable}"/>

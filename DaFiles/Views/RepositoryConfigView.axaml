@@ -5,8 +5,8 @@
              xmlns:vm="using:DaFiles.ViewModels"
              xmlns:models="using:DaFiles.Models"
              mc:Ignorable="d"
-             x:Class="DaFiles.Views.RepositoryConnectView"
-             x:DataType="vm:RepositoryConnectViewModel"
+             x:Class="DaFiles.Views.RepositoryConfigView"
+             x:DataType="vm:RepositoryConfigViewModel"
              Width="280">
     <UserControl.Styles>
 		<Style Selector="StackPanel > TextBlock:nth-child(n+2)">
@@ -23,7 +23,7 @@
         <TextBlock>Username</TextBlock>
         <TextBox Text="{Binding Username}"/>
         <TextBlock>Password</TextBlock>
-        <TextBox Name="PasswordTextBox" PasswordChar="*"/>
+        <TextBox Name="PasswordTextBox" Text="{Binding Password, UpdateSourceTrigger=Explicit, Converter={StaticResource SecureStringToStringConverter}}" PasswordChar="*"/>
         <TextBlock>Root path</TextBlock>
         <TextBox Text="{Binding RootPath}"/>
         <TextBlock Text="{Binding ErrorMessage}" IsVisible="{Binding ErrorMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"

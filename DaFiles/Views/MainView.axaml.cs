@@ -24,36 +24,73 @@ public partial class MainView : UserControl
 
     private async void AddRemoteDirectoryButton_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
     {
-        RepositoryConnectViewModel connectViewModel = new();
-        RepositoryConnectView connectView = new()
+        RepositoryConfigViewModel configViewModel = new();
+        RepositoryConfigView configView = new()
         {
-            DataContext = connectViewModel,
+            DataContext = configViewModel,
         };
         ContentDialog dialog = new()
         {
             PrimaryButtonText = "Connect",
             CloseButtonText = "Cancel",
             Title = "Connect to a remote directory",
-            Content = connectView,
+            Content = configView,
         };
 
         dialog.PrimaryButtonClick += async (dialog, e) =>
         {
-            connectViewModel.ErrorMessage = null;
+            configViewModel.ErrorMessage = null;
 
             if (ViewModel is not MainViewModel mainViewModel)
                 return;
 
-            connectView.IsEnabled = false;
+            configView.IsEnabled = false;
             var d = e.GetDeferral();
 
-            (dialog.Content as RepositoryConnectView)?.ReadPasswordSecureToViewModel();
+            (dialog.Content as RepositoryConfigView)?.ReadPasswordSecureToViewModel();
 
-            if (!await mainViewModel.TryAddNewRepositoryAsync(connectViewModel, select: true))
+            if (!await mainViewModel.TryAddNewRepositoryAsync(configViewModel, select: true))
                 e.Cancel = true;
 
             d.Complete();
-            connectView.IsEnabled = true;
+            configView.IsEnabled = true;
+        };
+
+        await dialog.ShowAsync(TopLevel.GetTopLevel(this));
+    }
+
+    private async void ConfigureRemoteDirectoryButton_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+    {
+        if (ViewModel is not MainViewModel mainViewModel ||
+            mainViewModel.CurrentRepositoryView is not RepositoryViewModel currentRepositoryView)
+            return;
+
+        RepositoryConfigViewModel configViewModel = new(currentRepositoryView.Repository.Config, preserveId: true);
+        RepositoryConfigView configView = new()
+        {
+            DataContext = configViewModel,
+        };
+        ContentDialog dialog = new()
+        {
+            PrimaryButtonText = "Save",
+            CloseButtonText = "Cancel",
+            Title = "Configure remote directory",
+            Content = configView,
+        };
+
+        dialog.PrimaryButtonClick += async (dialog, e) =>
+        {
+            configViewModel.ErrorMessage = null;
+            configView.IsEnabled = false;
+            var d = e.GetDeferral();
+
+            (dialog.Content as RepositoryConfigView)?.ReadPasswordSecureToViewModel();
+
+            if (!await mainViewModel.TryUpdateRepositoryConfigAsync(currentRepositoryView, configViewModel))
+                e.Cancel = true;
+
+            d.Complete();
+            configView.IsEnabled = true;
         };
 
         await dialog.ShowAsync(TopLevel.GetTopLevel(this));

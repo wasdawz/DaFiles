@@ -47,21 +47,11 @@ public partial class MainViewModel : ViewModelBase
         await repository.EnsureInitializedAsync();
     }
 
-    public async Task<bool> TryAddNewRepositoryAsync(RepositoryConnectViewModel connectViewModel, bool select = false)
+    public async Task<bool> TryAddNewRepositoryAsync(RepositoryConfigViewModel configViewModel, bool select = false)
     {
-        Repository repository = connectViewModel.ToRepository();
-
-        try
-        {
-            await repository.TestConnectionOrThrowAsync();
-        }
-        catch (Exception ex)
-        {
-            connectViewModel.ErrorMessage = ex.Message;
+        if (await CreateRepositoryOrSetErrorAsync(configViewModel) is not RepositoryViewModel repositoryViewModel)
             return false;
-        }
 
-        RepositoryViewModel repositoryViewModel = new(repository);
         _repositories.Add(repositoryViewModel);
 
         if (select)
@@ -71,11 +61,45 @@ public partial class MainViewModel : ViewModelBase
         return true;
     }
 
+    public async Task<bool> TryUpdateRepositoryConfigAsync(RepositoryViewModel repositoryViewToUpdate, RepositoryConfigViewModel configViewModel)
+    {
+        int repositoryIndex = _repositories.IndexOf(repositoryViewToUpdate);
+
+        if (repositoryIndex < 0 ||
+            await CreateRepositoryOrSetErrorAsync(configViewModel) is not RepositoryViewModel newRepositoryView)
+        {
+            return false;
+        }
+
+        _repositories[repositoryIndex] = newRepositoryView;
+        repositoryViewToUpdate.Repository.Dispose();
+        await _repositoryStore.SaveAsync(Repositories.Select(vm => vm.Repository));
+        await SelectRepositoryAsync(newRepositoryView);
+        return true;
+    }
+
     public async Task DeleteRepositoryAsync(RepositoryViewModel repositoryViewModel)
     {
         _repositories.Remove(repositoryViewModel);
         repositoryViewModel.Repository.Dispose();
         await _repositoryStore.DeleteAsync(repositoryViewModel.Repository);
         CurrentRepositoryView = _repositories.FirstOrDefault();
+    }
+
+    private static async Task<RepositoryViewModel?> CreateRepositoryOrSetErrorAsync(RepositoryConfigViewModel configViewModel)
+    {
+        Repository repository = configViewModel.ToRepository();
+
+        try
+        {
+            await repository.TestConnectionOrThrowAsync();
+            return new(repository);
+        }
+        catch (Exception ex)
+        {
+            configViewModel.ErrorMessage = ex.Message;
+            repository.Dispose();
+            return null;
+        }
     }
 }
