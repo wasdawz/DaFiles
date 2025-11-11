@@ -1,0 +1,46 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:local="using:DaFiles.Views"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:ui="using:FluentAvalonia.UI.Controls"
+             xmlns:vm="using:DaFiles.ViewModels"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="DaFiles.Views.NavigationPaneView"
+             x:DataType="vm:NavigationPaneViewModel">
+    <DockPanel>
+        <DockPanel DockPanel.Dock="Top" Margin="6,6,8,6">
+            <Button Theme="{StaticResource TransparentButton}" Margin="0,0,6,0" VerticalAlignment="Stretch"
+                    Command="{Binding CurrentRepositoryView.DirectoryNavigation.GoBackCommand}">
+                <ui:SymbolIcon Symbol="Back" />
+            </Button>
+            <Button Theme="{StaticResource TransparentButton}" Margin="0,0,6,0" VerticalAlignment="Stretch"
+                    Command="{Binding CurrentRepositoryView.DirectoryNavigation.GoForwardCommand}">
+                <ui:SymbolIcon Symbol="Forward" />
+            </Button>
+            <Button Theme="{StaticResource TransparentButton}" Margin="0,0,6,0" VerticalAlignment="Stretch"
+                    Command="{Binding CurrentRepositoryView.RefreshCurrentDirectoryCommand}">
+                <ui:SymbolIcon Symbol="Refresh" />
+            </Button>
+            <DropDownButton Width="140" Content="{Binding CurrentRepositoryView}" VerticalAlignment="Stretch" Margin="0,0,6,0">
+                <DropDownButton.Flyout>
+                    <ui:FAMenuFlyout Placement="BottomEdgeAlignedLeft" ItemsSource="{Binding RepositoryViews}">
+                        <ui:FAMenuFlyout.ItemContainerTheme>
+                            <ControlTheme TargetType="ui:MenuFlyoutItem" BasedOn="{StaticResource {x:Type ui:MenuFlyoutItem}}">
+                                <Setter Property="Command" Value="{Binding $parent[local:NavigationPaneView].((vm:NavigationPaneViewModel)DataContext).SelectRepositoryCommand}"/>
+                                <Setter Property="CommandParameter" Value="{Binding}"/>
+                            </ControlTheme>
+                        </ui:FAMenuFlyout.ItemContainerTheme>
+                    </ui:FAMenuFlyout>
+                </DropDownButton.Flyout>
+            </DropDownButton>
+            <TextBox Name="PathTextBox" Text="{Binding CurrentRepositoryView.DirectoryNavigation.CurrentItem.Directory.Path, Mode=OneWay}"
+                     LostFocus="PathTextBox_LostFocus">
+                <TextBox.KeyBindings>
+                    <KeyBinding Command="{Binding CurrentRepositoryView.DirectoryNavigation.SetTopItemCommand}" CommandParameter="{Binding #PathTextBox.Text}" Gesture="Enter" />
+                </TextBox.KeyBindings>
+            </TextBox>
+        </DockPanel>
+        <local:RepositoryView DataContext="{Binding CurrentRepositoryView}"/>
+    </DockPanel>
+</UserControl>

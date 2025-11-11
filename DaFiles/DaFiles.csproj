@@ -19,7 +19,14 @@
 
     <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
     <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="11.3.8" />
+    <PackageReference Include="DynamicData" Version="9.4.1" />
     <PackageReference Include="FluentAvaloniaUI" Version="2.4.0" />
     <PackageReference Include="WebDav.Client" Version="2.9.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Views\NavigationPaneView.axaml.cs">
+      <DependentUpon>NavigationPaneView.axaml</DependentUpon>
+    </Compile>
   </ItemGroup>
 </Project>

@@ -9,45 +9,43 @@
              x:Class="DaFiles.Views.MainView"
              x:DataType="vm:MainViewModel"
              d:DesignWidth="800" d:DesignHeight="500">
-    <Grid>
-        <DockPanel>
-            <DockPanel DockPanel.Dock="Top" Margin="6,6,8,6">
-                <Button Theme="{StaticResource TransparentButton}" Margin="0,0,6,0" VerticalAlignment="Stretch" Command="{Binding CurrentRepositoryView.DirectoryNavigation.GoBackCommand}"><ui:SymbolIcon Symbol="Back" /></Button>
-                <Button Theme="{StaticResource TransparentButton}" Margin="0,0,6,0" VerticalAlignment="Stretch" Command="{Binding CurrentRepositoryView.DirectoryNavigation.GoForwardCommand}"><ui:SymbolIcon Symbol="Forward" /></Button>
-                <Button Theme="{StaticResource TransparentButton}" Margin="0,0,6,0" VerticalAlignment="Stretch" Command="{Binding CurrentRepositoryView.RefreshCurrentDirectoryCommand}"><ui:SymbolIcon Symbol="Refresh" /></Button>
-                <Button Theme="{StaticResource TransparentButton}" Margin="0,0,6,0" VerticalAlignment="Stretch">
-				    <Button.Flyout>
-                        <ui:FAMenuFlyout>
-                            <ui:MenuFlyoutSubItem Text="Remote directory" IsVisible="{Binding IsCurrentRepositoryEditable}">
-                                <ui:MenuFlyoutItem Text="Configure" IconSource="Setting" Click="ConfigureRemoteDirectoryButton_Click"/>
-                                <ui:MenuFlyoutItem Text="Delete" IconSource="Delete" Click="DeleteRemoteDirectoryButton_Click"/>
-                            </ui:MenuFlyoutSubItem>
-                            <ui:MenuFlyoutSeparator IsVisible="{Binding IsCurrentRepositoryEditable}"/>
-                            <ui:MenuFlyoutItem Text="Add a remote directory" Click="AddRemoteDirectoryButton_Click"/>
-                        </ui:FAMenuFlyout>
+    <Grid RowDefinitions="*,Auto">
+        <UniformGrid Rows="1" ColumnSpacing="4">
+            <local:NavigationPaneView Grid.Column="0" DataContext="{Binding FirstNavigationPane}"/>
+            <local:NavigationPaneView Grid.Column="1" DataContext="{Binding SecondNavigationPane}"
+                                      IsVisible="{Binding $parent[local:MainView].((vm:MainViewModel)DataContext).IsSecondNavigationPaneOpen}"/>
+        </UniformGrid>
+        <Border Grid.Row="1" Padding="3" BorderThickness="0,1,0,0" BorderBrush="{DynamicResource DividerStrokeColorDefaultBrush}">
+            <DockPanel>
+                <Button DockPanel.Dock="Left" VerticalAlignment="Stretch" Theme="{StaticResource TransparentButton}">
+                    <ui:SymbolIcon Symbol="Setting" FontSize="16"/>
+                    <Button.Flyout>
+                        <MenuFlyout Placement="TopEdgeAlignedLeft">
+                            <MenuItem Header="Remote directories" ItemsSource="{Binding EditableRepositories}">
+                                <MenuItem.ItemContainerTheme>
+                                    <ControlTheme TargetType="MenuItem" BasedOn="{StaticResource {x:Type MenuItem}}">
+                                        <Setter Property="Template">
+                                            <ControlTemplate>
+                                                <MenuItem Header="{Binding}">
+                                                    <MenuItem Header="Configure" Click="ConfigureRemoteDirectoryButton_Click"/>
+                                                    <MenuItem Header="Delete" Click="DeleteRemoteDirectoryButton_Click"/>
+                                                </MenuItem>
+                                            </ControlTemplate>
+                                        </Setter>
+                                    </ControlTheme>
+                                </MenuItem.ItemContainerTheme>
+                            </MenuItem>
+                            <MenuItem Header="Add remote directory" Click="AddRemoteDirectoryButton_Click"/>
+                        </MenuFlyout>
                     </Button.Flyout>
-                    <ui:SymbolIcon Symbol="More" />
                 </Button>
-                <DropDownButton Width="140" Content="{Binding CurrentRepositoryView}" VerticalAlignment="Stretch" Margin="0,0,6,0">
-				    <DropDownButton.Flyout>
-					    <ui:FAMenuFlyout Placement="BottomEdgeAlignedLeft" ItemsSource="{Binding Repositories}">
-							<ui:FAMenuFlyout.ItemContainerTheme>
-								<ControlTheme TargetType="ui:MenuFlyoutItem" BasedOn="{StaticResource {x:Type ui:MenuFlyoutItem}}">
-									<Setter Property="Command" Value="{Binding $parent[local:MainView].((vm:MainViewModel)DataContext).SelectRepositoryCommand}"/>
-                                    <Setter Property="CommandParameter" Value="{Binding}"/>
-                                </ControlTheme>
-                            </ui:FAMenuFlyout.ItemContainerTheme>
-                        </ui:FAMenuFlyout>
-                    </DropDownButton.Flyout>
-                </DropDownButton>
-                <TextBox Name="PathTextBox" Text="{Binding CurrentRepositoryView.DirectoryNavigation.CurrentItem.Directory.Path, Mode=OneWay}"
-                         LostFocus="PathTextBox_LostFocus">
-                    <TextBox.KeyBindings>
-                        <KeyBinding Command="{Binding CurrentRepositoryView.DirectoryNavigation.SetTopItemCommand}" CommandParameter="{Binding #PathTextBox.Text}" Gesture="Enter" />
-                    </TextBox.KeyBindings>
-                </TextBox>
+                <Button DockPanel.Dock="Right" VerticalAlignment="Stretch" Theme="{StaticResource TransparentButton}"
+                        Command="{Binding ToggleSecondPaneCommand}">
+                    <ui:FontIcon Classes.iconOpenPaneMirrored="{Binding !IsSecondNavigationPaneOpen}"
+                                 Classes.iconClosePaneMirrored="{Binding IsSecondNavigationPaneOpen}"/>
+                </Button>
+                <Border/>
             </DockPanel>
-            <local:RepositoryView DataContext="{Binding CurrentRepositoryView}"/>
-        </DockPanel>
+        </Border>
     </Grid>
 </UserControl>

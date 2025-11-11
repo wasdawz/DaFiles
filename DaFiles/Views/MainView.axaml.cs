@@ -1,4 +1,5 @@
 ﻿using Avalonia.Controls;
+using DaFiles.Models;
 using DaFiles.ViewModels;
 using FluentAvalonia.UI.Controls;
 
@@ -11,15 +12,6 @@ public partial class MainView : UserControl
     public MainView()
     {
         InitializeComponent();
-    }
-
-    private void PathTextBox_LostFocus(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
-    {
-        if (ViewModel is not MainViewModel viewModel ||
-            sender is not TextBox textBox)
-            return;
-
-        textBox.Text = viewModel?.CurrentRepositoryView?.GetCurrentDirectory()?.Directory.Path;
     }
 
     private async void AddRemoteDirectoryButton_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
@@ -49,7 +41,7 @@ public partial class MainView : UserControl
 
             (dialog.Content as RepositoryConfigView)?.ReadPasswordSecureToViewModel();
 
-            if (!await mainViewModel.TryAddNewRepositoryAsync(configViewModel, select: true))
+            if (!await mainViewModel.TryAddNewRepositoryAsync(configViewModel))
                 e.Cancel = true;
 
             d.Complete();
@@ -62,10 +54,10 @@ public partial class MainView : UserControl
     private async void ConfigureRemoteDirectoryButton_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
     {
         if (ViewModel is not MainViewModel mainViewModel ||
-            mainViewModel.CurrentRepositoryView is not RepositoryViewModel currentRepositoryView)
+            (sender as Control)?.DataContext is not Repository repository)
             return;
 
-        RepositoryConfigViewModel configViewModel = new(currentRepositoryView.Repository.Config, preserveId: true);
+        RepositoryConfigViewModel configViewModel = new(repository.Config, preserveId: true);
         RepositoryConfigView configView = new()
         {
             DataContext = configViewModel,
@@ -86,7 +78,7 @@ public partial class MainView : UserControl
 
             (dialog.Content as RepositoryConfigView)?.ReadPasswordSecureToViewModel();
 
-            if (!await mainViewModel.TryUpdateRepositoryConfigAsync(currentRepositoryView, configViewModel))
+            if (!await mainViewModel.TryUpdateRepositoryConfigAsync(repository, configViewModel))
                 e.Cancel = true;
 
             d.Complete();
@@ -99,9 +91,9 @@ public partial class MainView : UserControl
     private async void DeleteRemoteDirectoryButton_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
     {
         if (ViewModel is MainViewModel mainViewModel &&
-            mainViewModel.CurrentRepositoryView is RepositoryViewModel currentRepositoryView)
+            sender is Control { DataContext: Repository repository })
         {
-            await mainViewModel.DeleteRepositoryAsync(currentRepositoryView);
+            await mainViewModel.DeleteRepositoryAsync(repository);
         }
     }
 }
