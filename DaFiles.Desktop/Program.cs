@@ -25,7 +25,11 @@ class Program
         else
             throw new PlatformNotSupportedException();
 
-        return AppBuilder.Configure<App>(() => new(secretStore))
+        return AppBuilder.Configure<App>(
+            () => new()
+            {
+                SecretStore = secretStore,
+            })
             .UsePlatformDetect()
             .WithInterFont()
             .LogToTrace();

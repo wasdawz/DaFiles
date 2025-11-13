@@ -14,11 +14,11 @@ using System.Collections.Generic;
 
 namespace DaFiles;
 
-public partial class App(ISecretStore secretStore) : Application
+public partial class App : Application
 {
     public const string AppName = "DaFiles";
 
-    private readonly ISecretStore _secretStore = secretStore;
+    public required ISecretStore SecretStore { get; init; }
 
     public override void Initialize()
     {
@@ -55,7 +55,7 @@ public partial class App(ISecretStore secretStore) : Application
         else
             throw new NotImplementedException();
 
-        Repositories repositoryStore = new(PrepareDataDirectory("Repositories"), topLevelGetter, _secretStore);
+        Repositories repositoryStore = new(PrepareDataDirectory("Repositories"), topLevelGetter, SecretStore);
         SourceList<Repository> repositories = new();
         repositories.Add(new Repository(new LocalRepositoryConfig("This device", topLevelGetter)));
         if (await repositoryStore.ReadAllAsync() is List<Repository> loadedRepositories)
