@@ -8,7 +8,9 @@ using DaFiles.Models;
 using DaFiles.Services;
 using DaFiles.ViewModels;
 using DaFiles.Views;
+using DynamicData;
 using System;
+using System.Collections.Generic;
 
 namespace DaFiles;
 
@@ -54,10 +56,15 @@ public partial class App(ISecretStore secretStore) : Application
             throw new NotImplementedException();
 
         Repositories repositoryStore = new(PrepareDataDirectory("Repositories"), topLevelGetter, _secretStore);
-        var repositories = await repositoryStore.ReadAllAsync() ?? [];
-        repositories.Insert(0, new Repository(new LocalRepositoryConfig("This device", topLevelGetter)));
+        SourceList<Repository> repositories = new();
+        repositories.Add(new Repository(new LocalRepositoryConfig("This device", topLevelGetter)));
+        if (await repositoryStore.ReadAllAsync() is List<Repository> loadedRepositories)
+            repositories.AddRange(loadedRepositories);
 
-        MainViewModel mainViewModel = new(repositories, repositoryStore);
+        SettingsViewModel settingsViewModel = new(
+            new RepositoriesSettingsViewModel(repositories, repositoryStore));
+
+        MainViewModel mainViewModel = new(repositories, settingsViewModel);
 
         rootControl.DataContext = mainViewModel;
 

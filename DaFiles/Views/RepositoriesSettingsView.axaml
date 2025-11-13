@@ -1,0 +1,44 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:ui="using:FluentAvalonia.UI.Controls"
+             xmlns:vm="using:DaFiles.ViewModels"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="DaFiles.Views.RepositoriesSettingsView"
+             x:DataType="vm:RepositoriesSettingsViewModel">
+    <ScrollViewer>
+        <StackPanel Spacing="4">
+			<ui:SettingsExpanderItem Content="Add a new remote directory">
+				<ui:SettingsExpanderItem.Footer>
+					<Button Content="Add remote directory" Classes="accent" Click="AddRemoteDirectoryButton_Click"/>
+                </ui:SettingsExpanderItem.Footer>
+            </ui:SettingsExpanderItem>
+            <TextBlock Margin="0,24,0,4" Text="Directories"/>
+            <ItemsControl ItemsSource="{Binding Repositories}">
+                <ItemsControl.ItemsPanel>
+				    <ItemsPanelTemplate>
+					    <StackPanel Spacing="4"/>
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <ui:SettingsExpanderItem Content="{Binding}">
+                            <ui:SettingsExpanderItem.Footer>
+                                <Button Theme="{StaticResource TransparentButton}">
+                                    <ui:SymbolIcon Symbol="More" FontSize="18" Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
+                                    <Button.Flyout>
+                                        <ui:FAMenuFlyout Placement="BottomEdgeAlignedRight">
+                                            <ui:MenuFlyoutItem Text="Configure" Click="ConfigureRemoteDirectoryButton_Click"/>
+                                            <ui:MenuFlyoutItem Text="Delete" Click="DeleteRemoteDirectoryButton_Click"/>
+                                        </ui:FAMenuFlyout>
+                                    </Button.Flyout>
+                                </Button>
+                            </ui:SettingsExpanderItem.Footer>
+                        </ui:SettingsExpanderItem>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

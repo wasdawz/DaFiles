@@ -17,27 +17,9 @@
         </UniformGrid>
         <Border Grid.Row="1" Padding="3" BorderThickness="0,1,0,0" BorderBrush="{DynamicResource DividerStrokeColorDefaultBrush}">
             <DockPanel>
-                <Button DockPanel.Dock="Left" VerticalAlignment="Stretch" Theme="{StaticResource TransparentButton}">
+                <Button DockPanel.Dock="Left" VerticalAlignment="Stretch" Theme="{StaticResource TransparentButton}"
+                        Click="SettingsButton_Click">
                     <ui:SymbolIcon Symbol="Setting" FontSize="16"/>
-                    <Button.Flyout>
-                        <MenuFlyout Placement="TopEdgeAlignedLeft">
-                            <MenuItem Header="Remote directories" ItemsSource="{Binding EditableRepositories}">
-                                <MenuItem.ItemContainerTheme>
-                                    <ControlTheme TargetType="MenuItem" BasedOn="{StaticResource {x:Type MenuItem}}">
-                                        <Setter Property="Template">
-                                            <ControlTemplate>
-                                                <MenuItem Header="{Binding}">
-                                                    <MenuItem Header="Configure" Click="ConfigureRemoteDirectoryButton_Click"/>
-                                                    <MenuItem Header="Delete" Click="DeleteRemoteDirectoryButton_Click"/>
-                                                </MenuItem>
-                                            </ControlTemplate>
-                                        </Setter>
-                                    </ControlTheme>
-                                </MenuItem.ItemContainerTheme>
-                            </MenuItem>
-                            <MenuItem Header="Add remote directory" Click="AddRemoteDirectoryButton_Click"/>
-                        </MenuFlyout>
-                    </Button.Flyout>
                 </Button>
                 <Button DockPanel.Dock="Right" VerticalAlignment="Stretch" Theme="{StaticResource TransparentButton}"
                         Command="{Binding ToggleSecondPaneCommand}">

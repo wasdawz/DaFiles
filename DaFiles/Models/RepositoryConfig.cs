@@ -27,3 +27,10 @@ public record WebDavRepositoryConfig(string Id, string Name, string HostUrl, str
 
     public override IRepository CreateService() => new WebDavRepository(this);
 }
+
+public record DummyRepositoryConfig(string Id, string Name, SecureString? Password) : RepositoryConfig(Id, Name, Password)
+{
+    public override bool IsSaveable => true;
+
+    public override IRepository CreateService() => new DummyRepository();
+}

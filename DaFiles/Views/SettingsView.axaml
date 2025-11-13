@@ -1,0 +1,19 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:ui="using:FluentAvalonia.UI.Controls"
+             xmlns:vm="using:DaFiles.ViewModels"
+             mc:Ignorable="d"
+             x:Class="DaFiles.Views.SettingsView"
+             x:DataType="vm:SettingsViewModel"
+             Width="850" Height="500">
+    <ui:NavigationView Name="NavView" PaneDisplayMode="Left" IsPaneToggleButtonVisible="False" IsSettingsVisible="False" OpenPaneLength="280"
+                       SelectionChanged="NavView_SelectionChanged">
+        <ui:NavigationView.MenuItems>
+            <ui:NavigationViewItem Tag="{Binding RepositoriesSettings}" Content="Remote directories"/>
+        </ui:NavigationView.MenuItems>
+
+        <ui:Frame Name="ContentFrame" Padding="16"/>
+    </ui:NavigationView>
+</UserControl>
