@@ -4,10 +4,9 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:ui="using:FluentAvalonia.UI.Controls"
              xmlns:vm="using:DaFiles.ViewModels"
-             mc:Ignorable="d"
+             mc:Ignorable="d" d:DesignWidth="850" d:DesignHeight="500"
              x:Class="DaFiles.Views.SettingsView"
-             x:DataType="vm:SettingsViewModel"
-             Width="850" Height="500">
+             x:DataType="vm:SettingsViewModel">
     <ui:NavigationView Name="NavView" PaneDisplayMode="Left" IsPaneToggleButtonVisible="False" IsSettingsVisible="False" OpenPaneLength="280"
                        SelectionChanged="NavView_SelectionChanged">
         <ui:NavigationView.MenuItems>

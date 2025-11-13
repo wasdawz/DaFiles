@@ -6,7 +6,7 @@
         mc:Ignorable="d"
         x:Class="DaFiles.Views.SettingsWindow"
         Title="DaFiles Settings"
-        SizeToContent="WidthAndHeight"
+        Width="850" Height="500"
         WindowStartupLocation="CenterOwner">
     <local:SettingsView/>
 </Window>
