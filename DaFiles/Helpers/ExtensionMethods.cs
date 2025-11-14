@@ -2,6 +2,7 @@
 using Avalonia.Controls;
 using System;
 using System.Collections.Generic;
+using System.Reactive.Linq;
 using System.Runtime.InteropServices;
 using System.Security;
 
@@ -29,6 +30,21 @@ internal static class ExtensionMethods
         string? str = Marshal.PtrToStringUni(stringPtr);
         Marshal.ZeroFreeCoTaskMemUnicode(stringPtr);
         return str;
+    }
+
+    /// <summary>
+    /// Projects each nullable element of an observable sequence into a new observable sequence.
+    /// </summary>
+    /// <typeparam name="TSource">The type of the elements in the source sequence.</typeparam>
+    /// <typeparam name="TResult">The type of the elements in the inner sequences, obtained by running the selector function for each element in the source sequence.</typeparam>
+    /// <param name="source">A sequence of elements to invoke a transform function on.</param>
+    /// <param name="selector">A transform function to apply to non-<see langword="null"/> source elements.</param>
+    /// <returns><para>An observable sequence whose elements are either:</para>
+    /// <para>- A sequence created by invoking the transform function on an element, if source element is non-<see langword="null"/>;</para>
+    /// <para>- An empty sequence whose observers will never get called, if source element is <see langword="null"/>.</para></returns>
+    public static IObservable<IObservable<TResult>> SelectInnerSequenceNullable<TSource, TResult>(this IObservable<TSource?> source, Func<TSource, IObservable<TResult>> selector)
+    {
+        return source.Select(el => el is null ? Observable.Never<TResult>(default!) : selector(el));
     }
 
     /// <summary>
