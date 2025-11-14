@@ -20,7 +20,9 @@
         </Style>
     </UserControl.Styles>
 
-    <DataGrid ItemsSource="{Binding Directory.Items}" FontFamily="Segoe UI Regular">
+    <DataGrid ItemsSource="{Binding Directory.Items}"
+              SelectedItem="{Binding SelectedItem}"
+              FontFamily="Segoe UI Regular">
 		<DataGrid.Columns>
 			<DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="300" IsReadOnly="True" />
 			<DataGridTextColumn Header="Modified" Binding="{Binding ModifiedDate, StringFormat=G}" IsReadOnly="True" />

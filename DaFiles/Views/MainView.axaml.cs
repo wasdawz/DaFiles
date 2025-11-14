@@ -8,6 +8,8 @@ public partial class MainView : UserControl
 {
     public MainViewModel? ViewModel => DataContext as MainViewModel;
 
+    private NavigationPaneView? _lastFocusedNavigationPane;
+
     public MainView()
     {
         InitializeComponent();
@@ -20,5 +22,19 @@ public partial class MainView : UserControl
             DataContext = ViewModel?.Settings
         };
         settingsWindow.ShowTryingAsChild(this);
+    }
+
+    private void NavigationPaneView_GotFocus(object? sender, Avalonia.Input.GotFocusEventArgs e)
+    {
+        if (sender is not NavigationPaneView focusedPane)
+            return;
+
+        if (focusedPane != _lastFocusedNavigationPane && _lastFocusedNavigationPane is not null &&
+            _lastFocusedNavigationPane.DataContext is NavigationPaneViewModel lastPaneViewModel)
+        {
+            lastPaneViewModel.CurrentRepositoryView?.DirectoryNavigation.CurrentItem?.SelectedItem = null;
+        }
+
+        _lastFocusedNavigationPane = focusedPane;
     }
 }
