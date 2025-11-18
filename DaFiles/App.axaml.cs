@@ -55,6 +55,8 @@ public partial class App : Application
         else
             throw new NotImplementedException();
 
+        OperationManager operationManager = new();
+
         Repositories repositoryStore = new(PrepareDataDirectory("Repositories"), topLevelGetter, SecretStore);
         SourceList<Repository> repositories = new();
         repositories.Add(new Repository(new LocalRepositoryConfig("This device", topLevelGetter)));
@@ -64,7 +66,7 @@ public partial class App : Application
         SettingsViewModel settingsViewModel = new(
             new RepositoriesSettingsViewModel(repositories, repositoryStore));
 
-        MainViewModel mainViewModel = new(repositories, settingsViewModel);
+        MainViewModel mainViewModel = new(repositories, settingsViewModel, operationManager);
 
         rootControl.DataContext = mainViewModel;
 

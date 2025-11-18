@@ -26,6 +26,8 @@ public partial class DirectoryItem : ObservableObject
     [ObservableProperty]
     private ulong? size;
 
+    public object? PlatformObject { get; init; }
+
     public DirectoryItem(DirectoryItemType itemType, string name, DateTimeOffset? modifiedDate, ulong? size)
     {
         ItemType = itemType;

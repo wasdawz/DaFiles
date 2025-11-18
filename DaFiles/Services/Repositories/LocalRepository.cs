@@ -27,6 +27,25 @@ public sealed class LocalRepository(Func<TopLevel?> topLevelGetter) : IRepositor
         return await ReadDirectoryContentsAsync(folder);
     }
 
+    public async Task MoveItemsAsync(IEnumerable<DirectoryItem> items, Directory destination)
+    {
+        if (destination.Repository is not LocalRepository)
+            throw new ArgumentException("Destination directory is not local.");
+
+        IStorageProvider storage = GetStorageProvider();
+
+        if (await storage.TryGetFolderFromPathAsync(destination.Path) is not IStorageFolder destinationFolder)
+            throw new ArgumentException("Destination folder doesn't exist.");
+
+        foreach (DirectoryItem item in items)
+        {
+            if (item.PlatformObject is not IStorageItem storageItem)
+                throw new ArgumentException("Local item is missing the platform object.");
+
+            await storageItem.MoveAsync(destinationFolder);
+        }
+    }
+
     public string GetRootPath() => "\\";
 
     public string CombinePath(string path1, string path2) => System.IO.Path.Combine(path1, path2);
@@ -47,7 +66,12 @@ public sealed class LocalRepository(Func<TopLevel?> topLevelGetter) : IRepositor
             var itemProperties = await item.GetBasicPropertiesAsync();
             var itemSize = itemType == DirectoryItemType.File ? itemProperties.Size : null;
 
-            items.Add(new(itemType, item.Name, itemProperties.DateModified, itemSize));
+            DirectoryItem directoryItem = new(itemType, item.Name, itemProperties.DateModified, itemSize)
+            {
+                PlatformObject = item,
+            };
+
+            items.Add(directoryItem);
         }
 
         return items;

@@ -12,15 +12,15 @@
         <DockPanel DockPanel.Dock="Top" Margin="6,6,8,6">
             <Button Theme="{StaticResource TransparentButton}" Margin="0,0,6,0" VerticalAlignment="Stretch"
                     Command="{Binding CurrentRepositoryView.DirectoryNavigation.GoBackCommand}">
-                <ui:SymbolIcon Symbol="Back" />
+                <ui:SymbolIcon Symbol="Back" FontSize="16" />
             </Button>
             <Button Theme="{StaticResource TransparentButton}" Margin="0,0,6,0" VerticalAlignment="Stretch"
                     Command="{Binding CurrentRepositoryView.DirectoryNavigation.GoForwardCommand}">
-                <ui:SymbolIcon Symbol="Forward" />
+                <ui:SymbolIcon Symbol="Forward" FontSize="16" />
             </Button>
             <Button Theme="{StaticResource TransparentButton}" Margin="0,0,6,0" VerticalAlignment="Stretch"
                     Command="{Binding CurrentRepositoryView.RefreshCurrentDirectoryCommand}">
-                <ui:SymbolIcon Symbol="Refresh" />
+                <ui:SymbolIcon Symbol="Refresh" FontSize="16" />
             </Button>
             <DropDownButton Width="140" Content="{Binding CurrentRepositoryView}" VerticalAlignment="Stretch" Margin="0,0,6,0">
                 <DropDownButton.Flyout>
@@ -40,6 +40,18 @@
                     <KeyBinding Command="{Binding CurrentRepositoryView.DirectoryNavigation.SetTopItemCommand}" CommandParameter="{Binding #PathTextBox.Text}" Gesture="Enter" />
                 </TextBox.KeyBindings>
             </TextBox>
+        </DockPanel>
+        <DockPanel DockPanel.Dock="Top" Margin="6,4,8,4" Height="32">
+            <Button Theme="{StaticResource TransparentButton}" Margin="0,0,6,0" VerticalAlignment="Stretch"
+                    Command="{Binding CutSelectedItemsCommand}"
+                    IsEnabled="{Binding CurrentRepositoryView.DirectoryNavigation.CurrentItem.SelectedItem, Converter={x:Static ObjectConverters.IsNotNull}}">
+                <ui:SymbolIcon Symbol="Cut" FontSize="16" />
+            </Button>
+            <Button Theme="{StaticResource TransparentButton}" Margin="0,0,6,0" VerticalAlignment="Stretch"
+                    Command="{Binding PasteCommand}"
+                    IsEnabled="{Binding OperationManager.StagedPasteableOperation, Converter={x:Static ObjectConverters.IsNotNull}}">
+                <ui:SymbolIcon Symbol="Paste" FontSize="16" />
+            </Button>
         </DockPanel>
         <local:RepositoryView DataContext="{Binding CurrentRepositoryView}"/>
     </DockPanel>

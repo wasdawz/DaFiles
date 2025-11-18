@@ -7,6 +7,8 @@ namespace DaFiles.Views;
 
 public partial class DirectoryView : UserControl
 {
+    public DirectoryViewModel? ViewModel => DataContext as DirectoryViewModel;
+
     public DirectoryView()
     {
         InitializeComponent();
@@ -23,5 +25,13 @@ public partial class DirectoryView : UserControl
                 new(Models.DirectoryItemType.Folder, "Folder 2", DateTimeOffset.Parse("2022.01.05 08:00:10"), null),
                 ]));
         }
+    }
+
+    private void DataGrid_SelectionChanged(object? sender, SelectionChangedEventArgs e)
+    {
+        if (ViewModel is null || sender is not DataGrid dataGrid)
+            return;
+
+        ViewModel.SelectedItems = dataGrid.SelectedItems;
     }
 }

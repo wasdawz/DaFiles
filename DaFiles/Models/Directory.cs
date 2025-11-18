@@ -18,12 +18,12 @@ public partial class Directory(string path, IRepository repository, List<Directo
 
     public RangeObservableCollection<DirectoryItem> Items { get; } = new(items);
 
-    private readonly IRepository _repository = repository;
+    public IRepository Repository { get; } = repository;
 
     [RelayCommand]
     public async Task RefreshAsync()
     {
-        var items = await _repository.ReadDirectoryContentsAsync(Path);
+        var items = await Repository.ReadDirectoryContentsAsync(Path);
         Items.ReplaceRange(items);
     }
 }
