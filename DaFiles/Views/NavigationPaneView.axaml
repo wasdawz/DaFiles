@@ -34,12 +34,22 @@
                     </ui:FAMenuFlyout>
                 </DropDownButton.Flyout>
             </DropDownButton>
-            <TextBox Name="PathTextBox" Text="{Binding CurrentRepositoryView.DirectoryNavigation.CurrentItem.Directory.Path, Mode=OneWay}"
-                     LostFocus="PathTextBox_LostFocus">
-                <TextBox.KeyBindings>
-                    <KeyBinding Command="{Binding CurrentRepositoryView.DirectoryNavigation.SetTopItemCommand}" CommandParameter="{Binding #PathTextBox.Text}" Gesture="Enter" />
-                </TextBox.KeyBindings>
-            </TextBox>
+            <Grid>
+                <TextBox Name="PathTextBox" Text="{Binding CurrentRepositoryView.DirectoryNavigation.CurrentItem.Directory.Path, Mode=OneWay}"
+                         LostFocus="PathTextBox_LostFocus">
+                    <TextBox.KeyBindings>
+                        <KeyBinding Command="{Binding CurrentRepositoryView.DirectoryNavigation.SetTopItemCommand}" CommandParameter="{Binding #PathTextBox.Text}" Gesture="Enter" />
+                    </TextBox.KeyBindings>
+                </TextBox>
+                <Rectangle IsVisible="{Binding !#PathTextBox.IsFocused}" Fill="Transparent">
+                    <Interaction.Behaviors>
+                        <EventTriggerBehavior EventName="Tapped">
+                            <FocusControlAction TargetControl="{Binding #PathTextBox}" />
+                            <CallMethodAction TargetObject="{Binding #PathTextBox}" MethodName="SelectAll" />
+                        </EventTriggerBehavior>
+                    </Interaction.Behaviors>
+                </Rectangle>
+            </Grid>
         </DockPanel>
         <DockPanel DockPanel.Dock="Top" Margin="6,4,8,4" Height="32">
             <Button Theme="{StaticResource TransparentButton}" Margin="0,0,6,0" VerticalAlignment="Stretch"
