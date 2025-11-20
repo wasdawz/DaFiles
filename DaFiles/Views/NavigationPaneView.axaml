@@ -58,6 +58,11 @@
                 <ui:SymbolIcon Symbol="Cut" FontSize="16" />
             </Button>
             <Button Theme="{StaticResource TransparentButton}" Margin="0,0,6,0" VerticalAlignment="Stretch"
+                    Command="{Binding CopySelectedItemsCommand}"
+                    IsEnabled="{Binding CurrentRepositoryView.DirectoryNavigation.CurrentItem.SelectedItem, Converter={x:Static ObjectConverters.IsNotNull}}">
+                <ui:SymbolIcon Symbol="Copy" FontSize="16" />
+            </Button>
+            <Button Theme="{StaticResource TransparentButton}" Margin="0,0,6,0" VerticalAlignment="Stretch"
                     Command="{Binding PasteCommand}"
                     IsEnabled="{Binding OperationManager.StagedPasteableOperation, Converter={x:Static ObjectConverters.IsNotNull}}">
                 <ui:SymbolIcon Symbol="Paste" FontSize="16" />

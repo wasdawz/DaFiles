@@ -46,9 +46,71 @@ public sealed class LocalRepository(Func<TopLevel?> topLevelGetter) : IRepositor
         }
     }
 
+    public async Task CopyItemsAsync(IEnumerable<DirectoryItem> items, Directory destination)
+    {
+        if (destination.Repository is not LocalRepository)
+            throw new ArgumentException("Destination directory is not local.");
+
+        IStorageProvider storage = GetStorageProvider();
+
+        if (await storage.TryGetFolderFromPathAsync(destination.Path) is null)
+            throw new ArgumentException("Destination folder doesn't exist.");
+
+        foreach (DirectoryItem item in items)
+        {
+            if (item.PlatformObject is not IStorageItem storageItem)
+                throw new ArgumentException("Local item has no valid platform object.");
+
+            await CopyItemAsync(storageItem, destination.Path);
+        }
+    }
+
     public string GetRootPath() => "\\";
 
     public string CombinePath(string path1, string path2) => System.IO.Path.Combine(path1, path2);
+
+    private async Task CopyItemAsync(IStorageItem item, string destinationFolderPath)
+    {
+        if (item is IStorageFolder storageFolder)
+            await CopyFolderAsync(storageFolder, destinationFolderPath);
+        else if (item is IStorageFile storageFile)
+            await CopyFileAsync(storageFile, destinationFolderPath);
+        else
+            throw new ArgumentException("Local item has an invalid platform object.");
+    }
+
+    private async Task CopyFolderAsync(IStorageFolder storageFolder, string destinationFolderPath)
+    {
+        string newFolderPath = CombinePath(destinationFolderPath, storageFolder.Name);
+        System.IO.Directory.CreateDirectory(newFolderPath);
+
+        await foreach (IStorageItem item in storageFolder.GetItemsAsync())
+        {
+            await CopyItemAsync(item, newFolderPath);
+        }
+    }
+
+    private async Task CopyFileAsync(IStorageFile sourceFile, string destinationFolderPath)
+    {
+        string destinationFilePath = CombinePath(destinationFolderPath, sourceFile.Name);
+        try
+        {
+            using (System.IO.FileStream sourceStream = System.IO.File.OpenRead(sourceFile.Path.AbsolutePath))
+            {
+                using System.IO.FileStream destinationStream = new(destinationFilePath, System.IO.FileMode.Create, System.IO.FileAccess.Write);
+                await sourceStream.CopyToAsync(destinationStream);
+            }
+            DateTime fileModifiedDate = System.IO.File.GetLastWriteTimeUtc(sourceFile.Path.AbsolutePath);
+            System.IO.File.SetLastWriteTimeUtc(destinationFilePath, fileModifiedDate);
+        }
+        catch
+        {
+            if (System.IO.File.Exists(destinationFilePath))
+                System.IO.File.Delete(destinationFilePath);
+
+            throw;
+        }
+    }
 
     private static async Task<List<DirectoryItem>> ReadDirectoryContentsAsync(IStorageFolder folder)
     {

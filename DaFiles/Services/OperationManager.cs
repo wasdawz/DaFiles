@@ -45,6 +45,8 @@ public partial class OperationManager : ObservableObject
         {
             if (operation.OperationType == TransferOperationType.Cut)
                 await localSourceRepository.MoveItemsAsync(operation.Items, operation.Destination);
+            else if (operation.OperationType == TransferOperationType.Copy)
+                await localSourceRepository.CopyItemsAsync(operation.Items, operation.Destination);
             else
                 throw new NotImplementedException();
         }

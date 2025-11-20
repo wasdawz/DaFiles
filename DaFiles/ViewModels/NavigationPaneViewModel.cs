@@ -59,6 +59,9 @@ public partial class NavigationPaneViewModel : ViewModelBase
     public void CutSelectedItems() => StageSelectedItemsOperation(TransferOperationType.Cut);
 
     [RelayCommand]
+    public void CopySelectedItems() => StageSelectedItemsOperation(TransferOperationType.Copy);
+
+    [RelayCommand]
     public async Task Paste()
     {
         if (OperationManager.StagedPasteableOperation is not TransferOperation pasteOperation)
