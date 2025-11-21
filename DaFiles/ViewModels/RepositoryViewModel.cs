@@ -23,6 +23,7 @@ public partial class RepositoryViewModel : ViewModelBase
         Repository = repository;
         DirectoryNavigation = new(ReadDirectory);
         DirectoryNavigation.CurrentItemChanged += ClearMessage;
+        DirectoryNavigation.LoadingCachedItem += DirectoryNavigation_LoadingCachedItem;
     }
 
     public async Task EnsureInitializedAsync()
@@ -71,6 +72,19 @@ public partial class RepositoryViewModel : ViewModelBase
     private void ClearMessage()
     {
         ErrorMessage = null;
+    }
+
+    private async void DirectoryNavigation_LoadingCachedItem(LoadingCachedItemEventArgs<DirectoryViewModel> e)
+    {
+        try
+        {
+            await e.Item.Directory.RefreshAsync();
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = ex.Message;
+            e.Cancel = true;
+        }
     }
 
     private async Task<DirectoryViewModel?> ReadDirectory(string path)

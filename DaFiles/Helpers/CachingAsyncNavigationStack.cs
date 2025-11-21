@@ -22,6 +22,7 @@ public partial class CachingAsyncNavigationStack<TKey, TItem>(Func<TKey, Task<TI
     public TItem? CurrentItem => NavigationStackIndex < 0 ? default : _navigationStack[NavigationStackIndex];
 
     public event Action? CurrentItemChanged;
+    public event Action<LoadingCachedItemEventArgs<TItem>>? LoadingCachedItem;
 
     private readonly Func<TKey, Task<TItem?>> _asyncFactory = asyncFactory;
     private readonly Dictionary<TKey, TItem> _cache = [];
@@ -36,7 +37,12 @@ public partial class CachingAsyncNavigationStack<TKey, TItem>(Func<TKey, Task<TI
         // Clear navigation stack above current item.
         _navigationStack.RemoveRange(NavigationStackIndex + 1, _navigationStack.Count - NavigationStackIndex - 1);
 
-        if (!_cache.TryGetValue(itemKey, out var item))
+        if (_cache.TryGetValue(itemKey, out var item))
+        {
+            if (!OnLoadingCachedItem(item))
+                return;
+        }
+        else
         {
             // Item not in cache - create.
             item = await _asyncFactory(itemKey);
@@ -58,7 +64,12 @@ public partial class CachingAsyncNavigationStack<TKey, TItem>(Func<TKey, Task<TI
         if (NavigationStackIndex <= 0)
             return;
 
-        NavigationStackIndex--;
+        int newIndex = NavigationStackIndex - 1;
+
+        if (!OnLoadingCachedItemFromStack(newIndex))
+            return;
+
+        NavigationStackIndex = newIndex;
         OnCurrentItemChanged();
     }
 
@@ -68,8 +79,29 @@ public partial class CachingAsyncNavigationStack<TKey, TItem>(Func<TKey, Task<TI
         if (_navigationStack.Count - 1 == NavigationStackIndex)
             return;
 
-        NavigationStackIndex++;
+        int newIndex = NavigationStackIndex + 1;
+
+        if (!OnLoadingCachedItemFromStack(newIndex))
+            return;
+
+        NavigationStackIndex = newIndex;
         OnCurrentItemChanged();
+    }
+
+    private bool OnLoadingCachedItemFromStack(int navigationStackIndex)
+    {
+        return OnLoadingCachedItem(_navigationStack[navigationStackIndex]);
+    }
+
+    private bool OnLoadingCachedItem(TItem item)
+    {
+        LoadingCachedItemEventArgs<TItem> eventArgs = new()
+        {
+            Item = item,
+        };
+
+        LoadingCachedItem?.Invoke(eventArgs);
+        return !eventArgs.Cancel;
     }
 
     private void OnCurrentItemChanged()
@@ -77,4 +109,11 @@ public partial class CachingAsyncNavigationStack<TKey, TItem>(Func<TKey, Task<TI
         OnPropertyChanged(nameof(CurrentItem));
         CurrentItemChanged?.Invoke();
     }
+}
+
+public class LoadingCachedItemEventArgs<T>
+{
+    public required T Item { get; init; }
+
+    public bool Cancel { get; set; }
 }
