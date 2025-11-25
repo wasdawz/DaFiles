@@ -67,6 +67,18 @@
                     IsEnabled="{Binding OperationManager.StagedPasteableOperation, Converter={x:Static ObjectConverters.IsNotNull}}">
                 <ui:SymbolIcon Symbol="Paste" FontSize="16" />
             </Button>
+            <Button Theme="{StaticResource TransparentButton}" Margin="0,0,6,0" VerticalAlignment="Stretch"
+                    IsEnabled="{Binding CurrentRepositoryView.DirectoryNavigation.CurrentItem.SelectedItem, Converter={x:Static ObjectConverters.IsNotNull}}">
+                <ui:SymbolIcon Symbol="Delete" FontSize="16" />
+                <Interaction.Behaviors>
+                    <ButtonClickEventTriggerBehavior KeyModifiers="None">
+                        <InvokeCommandAction Command="{Binding DeleteSelectedItemsCommand}" />
+                    </ButtonClickEventTriggerBehavior>
+                    <ButtonClickEventTriggerBehavior KeyModifiers="Shift">
+                        <InvokeCommandAction Command="{Binding DeleteSelectedItemsPermanentlyCommand}" />
+                    </ButtonClickEventTriggerBehavior>
+                </Interaction.Behaviors>
+            </Button>
         </DockPanel>
         <local:RepositoryView DataContext="{Binding CurrentRepositoryView}"/>
     </DockPanel>

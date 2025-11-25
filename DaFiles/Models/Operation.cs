@@ -22,3 +22,12 @@ public class TransferOperation : Operation
 
     public required IList<DirectoryItem> Items { get; init; }
 }
+
+public class DeleteOperation : Operation
+{
+    public required Directory ParentDirectory { get; init; }
+
+    public required IList<DirectoryItem> Items { get; init; }
+
+    public required bool Permanent { get; init; }
+}

@@ -3,3 +3,8 @@ CredRead
 CredDelete
 CredFree
 WIN32_ERROR
+CoCreateInstance
+SHCreateItemFromParsingName
+IShellItem
+IFileOperation
+FileOperation

@@ -73,6 +73,42 @@ public partial class NavigationPaneViewModel : ViewModelBase
         await OperationManager.RunOperationAsync(pasteOperation);
     }
 
+    [RelayCommand]
+    public async Task DeleteSelectedItemsAsync()
+    {
+        if (CurrentRepositoryView?.DirectoryNavigation.CurrentItem is not DirectoryViewModel currentDirectoryView)
+            return;
+        if (currentDirectoryView.GetSelectedItems() is not IList<DirectoryItem> selectedItems)
+            return;
+
+        DeleteOperation deleteOperation = new()
+        {
+            ParentDirectory = currentDirectoryView.Directory,
+            Items = selectedItems,
+            Permanent = false,
+        };
+
+        await OperationManager.RunOperationAsync(deleteOperation);
+    }
+
+    [RelayCommand]
+    public async Task DeleteSelectedItemsPermanentlyAsync()
+    {
+        if (CurrentRepositoryView?.DirectoryNavigation.CurrentItem is not DirectoryViewModel currentDirectoryView)
+            return;
+        if (currentDirectoryView.GetSelectedItems() is not IList<DirectoryItem> selectedItems)
+            return;
+
+        DeleteOperation deleteOperation = new()
+        {
+            ParentDirectory = currentDirectoryView.Directory,
+            Items = selectedItems,
+            Permanent = true,
+        };
+
+        await OperationManager.RunOperationAsync(deleteOperation);
+    }
+
     private void StageSelectedItemsOperation(TransferOperationType operationType)
     {
         if (CurrentRepositoryView?.DirectoryNavigation.CurrentItem is not DirectoryViewModel sourceDirectoryView)

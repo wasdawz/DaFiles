@@ -19,9 +19,15 @@ class Program
     public static AppBuilder BuildAvaloniaApp()
     {
         ISecretStore secretStore;
+        IPlatformStorage platformStorage;
 
         if (OperatingSystem.IsWindowsVersionAtLeast(5, 1, 2600))
             secretStore = new WindowsCredentialManagerSecretStore(App.AppName);
+        else
+            throw new PlatformNotSupportedException();
+
+        if (OperatingSystem.IsWindowsVersionAtLeast(6, 0, 6000))
+            platformStorage = new WindowsStorage();
         else
             throw new PlatformNotSupportedException();
 
@@ -29,6 +35,7 @@ class Program
             () => new()
             {
                 SecretStore = secretStore,
+                PlatformStorage = platformStorage,
             })
             .UsePlatformDetect()
             .WithInterFont()

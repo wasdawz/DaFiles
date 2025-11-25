@@ -19,6 +19,7 @@ public partial class App : Application
     public const string AppName = "DaFiles";
 
     public required ISecretStore SecretStore { get; init; }
+    public required IPlatformStorage PlatformStorage { get; init; }
 
     public override void Initialize()
     {
@@ -59,7 +60,7 @@ public partial class App : Application
 
         Repositories repositoryStore = new(PrepareDataDirectory("Repositories"), topLevelGetter, SecretStore);
         SourceList<Repository> repositories = new();
-        repositories.Add(new Repository(new LocalRepositoryConfig("This device", topLevelGetter)));
+        repositories.Add(new Repository(new LocalRepositoryConfig("This device", topLevelGetter, PlatformStorage)));
         if (await repositoryStore.ReadAllAsync() is List<Repository> loadedRepositories)
             repositories.AddRange(loadedRepositories);
 

@@ -31,6 +31,11 @@ public partial class OperationManager : ObservableObject
             await transferOperation.Destination.RefreshAsync();
             await transferOperation.Source.RefreshAsync();
         }
+        else if (operation is DeleteOperation deleteOperation)
+        {
+            await Task.Run(() => RunDeleteOperationAsync(deleteOperation));
+            await deleteOperation.ParentDirectory.RefreshAsync();
+        }
         else
             throw new NotImplementedException();
     }
@@ -49,6 +54,19 @@ public partial class OperationManager : ObservableObject
                 await localSourceRepository.CopyItemsAsync(operation.Items, operation.Destination);
             else
                 throw new NotImplementedException();
+        }
+        else
+            throw new NotImplementedException();
+    }
+
+    private static async Task RunDeleteOperationAsync(DeleteOperation operation)
+    {
+        if (operation.ParentDirectory.Repository is LocalRepository localRepository)
+        {
+            if (operation.Permanent)
+                await LocalRepository.DeleteItemsAsync(operation.Items);
+            else
+                localRepository.MoveItemsToTrash(operation.Items, operation.ParentDirectory);
         }
         else
             throw new NotImplementedException();

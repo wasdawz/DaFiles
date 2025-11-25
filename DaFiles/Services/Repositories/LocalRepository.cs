@@ -7,9 +7,10 @@ using DaFiles.Models;
 
 namespace DaFiles.Services.Repositories;
 
-public sealed class LocalRepository(Func<TopLevel?> topLevelGetter) : IRepository
+public sealed class LocalRepository(Func<TopLevel?> topLevelGetter, IPlatformStorage platformStorage) : IRepository
 {
     private readonly Func<TopLevel?> _topLevelGetter = topLevelGetter;
+    private readonly IPlatformStorage _platformStorage = platformStorage;
 
     public async Task<Directory> ReadDirectoryAsync(string path)
     {
@@ -63,6 +64,22 @@ public sealed class LocalRepository(Func<TopLevel?> topLevelGetter) : IRepositor
 
             await CopyItemAsync(storageItem, destination.Path);
         }
+    }
+
+    public static async Task DeleteItemsAsync(IEnumerable<DirectoryItem> items)
+    {
+        foreach (DirectoryItem item in items)
+        {
+            if (item.PlatformObject is not IStorageItem storageItem)
+                throw new ArgumentException("Local item has no valid platform object.");
+
+            await storageItem.DeleteAsync();
+        }
+    }
+
+    public void MoveItemsToTrash(IEnumerable<DirectoryItem> items, Directory parentDirectory)
+    {
+        _platformStorage.MoveItemsToTrash(items, parentDirectory);
     }
 
     public string GetRootPath() => "\\";
