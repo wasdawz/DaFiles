@@ -18,6 +18,6 @@ public partial class NavigationPaneView : UserControl
             sender is not TextBox textBox)
             return;
 
-        textBox.Text = viewModel?.CurrentRepositoryView?.GetCurrentDirectory()?.Directory.Path;
+        textBox.Text = viewModel?.CurrentRepositoryView?.CurrentDirectory?.Directory.Path;
     }
 }

@@ -13,10 +13,10 @@ public partial class RepositoryViewModel : ViewModelBase
 
     public CachingAsyncNavigationStack<string, DirectoryViewModel> DirectoryNavigation { get; }
 
+    public DirectoryViewModel? CurrentDirectory => DirectoryNavigation.CurrentItem;
+
     [ObservableProperty]
     private string? errorMessage;
-
-    private bool _isInitialized = false;
 
     public RepositoryViewModel(Repository repository)
     {
@@ -26,21 +26,21 @@ public partial class RepositoryViewModel : ViewModelBase
         DirectoryNavigation.LoadingCachedItem += DirectoryNavigation_LoadingCachedItem;
     }
 
-    public async Task EnsureInitializedAsync()
+    public async Task<bool> TryEnsureInitializedAsync()
     {
-        if (!_isInitialized)
+        if (CurrentDirectory is null)
         {
             await DirectoryNavigation.SetTopItemAsync(Repository.Service.GetRootPath());
-            _isInitialized = true;
+            return CurrentDirectory is not null;
         }
+        else
+            return true;
     }
-
-    public DirectoryViewModel? GetCurrentDirectory() => DirectoryNavigation.CurrentItem;
 
     public async Task OpenItemAsync(object? item)
     {
         if (item is not DirectoryItem directoryItem ||
-            GetCurrentDirectory() is not DirectoryViewModel currentDirectory)
+            CurrentDirectory is not DirectoryViewModel currentDirectory)
             return;
 
         if (directoryItem.ItemType == DirectoryItemType.Folder)
@@ -53,8 +53,18 @@ public partial class RepositoryViewModel : ViewModelBase
     [RelayCommand]
     public async Task RefreshCurrentDirectoryAsync()
     {
-        if (GetCurrentDirectory()?.Directory is not Directory directory)
-            return;
+        Directory? directory = CurrentDirectory?.Directory;
+
+        if (directory is null)
+        {
+            if (!await TryEnsureInitializedAsync())
+                return;
+
+            directory = CurrentDirectory?.Directory;
+
+            if (directory is null)
+                return;
+        }
 
         try
         {

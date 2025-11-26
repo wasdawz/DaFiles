@@ -45,14 +45,14 @@ public partial class NavigationPaneViewModel : ViewModelBase
         if (CurrentRepositoryView is null)
             return;
 
-        await CurrentRepositoryView.EnsureInitializedAsync();
+        await CurrentRepositoryView.TryEnsureInitializedAsync();
     }
 
     [RelayCommand]
     public async Task SelectRepositoryAsync(RepositoryViewModel repository)
     {
         CurrentRepositoryView = repository;
-        await repository.EnsureInitializedAsync();
+        await repository.TryEnsureInitializedAsync();
     }
 
     [RelayCommand]
