@@ -1,10 +1,12 @@
-﻿using Avalonia.Controls;
+﻿using Avalonia;
+using Avalonia.Controls;
 using DaFiles.Helpers;
 using DaFiles.ViewModels;
+using FluentAvalonia.UI.Controls;
 
 namespace DaFiles.Views;
 
-public partial class MainView : UserControl
+public partial class MainView : UserControl, IMessagePresenter
 {
     public MainViewModel? ViewModel => DataContext as MainViewModel;
 
@@ -36,5 +38,23 @@ public partial class MainView : UserControl
         }
 
         _lastFocusedNavigationPane = focusedPane;
+    }
+
+    async void IMessagePresenter.ShowError(string message)
+    {
+        TaskDialog dialog = new()
+        {
+            Title = "Error",
+            Header = "Error",
+            Content = message,
+            MaxWidth = 500,
+            XamlRoot = this.VisualRoot as Visual,
+            Buttons =
+            {
+                TaskDialogButton.CancelButton
+            }
+        };
+
+        await dialog.ShowAsync();
     }
 }

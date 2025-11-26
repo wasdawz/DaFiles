@@ -1,4 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
+using DaFiles.Helpers;
 using DaFiles.Models;
 using DaFiles.Services.Repositories;
 using System;
@@ -6,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace DaFiles.Services;
 
-public partial class OperationManager : ObservableObject
+public partial class OperationManager(IMessagePresenter messagePresenter) : ObservableObject
 {
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(StagedPasteableOperation))]
@@ -14,30 +15,39 @@ public partial class OperationManager : ObservableObject
 
     public TransferOperation? StagedPasteableOperation => StagedOperation as TransferOperation;
 
+    private readonly IMessagePresenter _messagePresenter = messagePresenter;
+
     public async Task RunOperationAsync(Operation operation)
     {
-        if (operation is TransferOperation transferOperation)
+        try
         {
-            if (transferOperation.Destination is null)
-                return;
-
-            if (transferOperation == StagedOperation &&
-                transferOperation.OperationType == TransferOperationType.Cut)
+            if (operation is TransferOperation transferOperation)
             {
-                StagedOperation = null;
-            }
+                if (transferOperation.Destination is null)
+                    return;
 
-            await Task.Run(() => RunTransferOperationAsync(transferOperation));
-            await transferOperation.Destination.RefreshAsync();
-            await transferOperation.Source.RefreshAsync();
+                if (transferOperation == StagedOperation &&
+                    transferOperation.OperationType == TransferOperationType.Cut)
+                {
+                    StagedOperation = null;
+                }
+
+                await Task.Run(() => RunTransferOperationAsync(transferOperation));
+                await transferOperation.Destination.RefreshAsync();
+                await transferOperation.Source.RefreshAsync();
+            }
+            else if (operation is DeleteOperation deleteOperation)
+            {
+                await Task.Run(() => RunDeleteOperationAsync(deleteOperation));
+                await deleteOperation.ParentDirectory.RefreshAsync();
+            }
+            else
+                throw new NotImplementedException();
         }
-        else if (operation is DeleteOperation deleteOperation)
+        catch (Exception ex)
         {
-            await Task.Run(() => RunDeleteOperationAsync(deleteOperation));
-            await deleteOperation.ParentDirectory.RefreshAsync();
+            _messagePresenter.ShowError(ex.Message);
         }
-        else
-            throw new NotImplementedException();
     }
 
     private static async Task RunTransferOperationAsync(TransferOperation operation)

@@ -4,6 +4,7 @@ using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Data.Core.Plugins;
 using Avalonia.Markup.Xaml;
 using DaFiles.Data;
+using DaFiles.Helpers;
 using DaFiles.Models;
 using DaFiles.Services;
 using DaFiles.ViewModels;
@@ -34,6 +35,7 @@ public partial class App : Application
 
         Control rootControl;
         Func<TopLevel?>? topLevelGetter;
+        IMessagePresenter messagePresenter;
 
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
@@ -41,6 +43,7 @@ public partial class App : Application
             desktop.MainWindow = window;
             rootControl = window;
             topLevelGetter = () => desktop.MainWindow;
+            messagePresenter = (IMessagePresenter)window.Content!;
         }
         else if (ApplicationLifetime is ISingleViewApplicationLifetime singleViewPlatform)
         {
@@ -48,6 +51,7 @@ public partial class App : Application
             singleViewPlatform.MainView = view;
             rootControl = view;
             topLevelGetter = () => TopLevel.GetTopLevel(singleViewPlatform.MainView);
+            messagePresenter = view;
         }
         else if (ApplicationLifetime is null && Design.IsDesignMode)
         {
@@ -56,7 +60,7 @@ public partial class App : Application
         else
             throw new NotImplementedException();
 
-        OperationManager operationManager = new();
+        OperationManager operationManager = new(messagePresenter);
 
         Repositories repositoryStore = new(PrepareDataDirectory("Repositories"), topLevelGetter, SecretStore);
         SourceList<Repository> repositories = new();
