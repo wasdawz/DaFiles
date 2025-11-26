@@ -10,12 +10,14 @@
              x:DataType="vm:MainViewModel"
              d:DesignWidth="800" d:DesignHeight="500">
     <Grid RowDefinitions="*,Auto">
-        <UniformGrid Rows="1" ColumnSpacing="4">
+        <UniformGrid Rows="1">
             <local:NavigationPaneView Grid.Column="0" DataContext="{Binding FirstNavigationPane}" GotFocus="NavigationPaneView_GotFocus"/>
             <local:NavigationPaneView Grid.Column="1" DataContext="{Binding SecondNavigationPane}" GotFocus="NavigationPaneView_GotFocus"
-                                      IsVisible="{Binding $parent[local:MainView].((vm:MainViewModel)DataContext).IsSecondNavigationPaneOpen}"/>
+                                      IsVisible="{Binding $parent[local:MainView].((vm:MainViewModel)DataContext).IsSecondNavigationPaneOpen}"
+                                      BorderThickness="1,0,0,0" BorderBrush="{DynamicResource DividerStrokeColorDefaultBrush}"/>
         </UniformGrid>
-        <Border Grid.Row="1" Padding="3" BorderThickness="0,1,0,0" BorderBrush="{DynamicResource DividerStrokeColorDefaultBrush}">
+        <Border Grid.Row="1" Padding="3" BorderThickness="0,1,0,0" BorderBrush="{DynamicResource ControlStrokeColorSecondaryBrush}"
+                Background="{DynamicResource SolidBackgroundFillColorTertiaryBrush}">
             <DockPanel>
                 <Button DockPanel.Dock="Left" VerticalAlignment="Stretch" Theme="{StaticResource TransparentButton}"
                         Click="SettingsButton_Click">

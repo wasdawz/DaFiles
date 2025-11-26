@@ -8,49 +8,78 @@
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="DaFiles.Views.NavigationPaneView"
              x:DataType="vm:NavigationPaneViewModel">
-    <DockPanel>
-        <DockPanel DockPanel.Dock="Top" Margin="6,6,8,6">
-            <Button Theme="{StaticResource TransparentButton}" Margin="0,0,6,0" VerticalAlignment="Stretch"
-                    Command="{Binding CurrentRepositoryView.DirectoryNavigation.GoBackCommand}">
-                <ui:SymbolIcon Symbol="Back" FontSize="16" />
-            </Button>
-            <Button Theme="{StaticResource TransparentButton}" Margin="0,0,6,0" VerticalAlignment="Stretch"
-                    Command="{Binding CurrentRepositoryView.DirectoryNavigation.GoForwardCommand}">
-                <ui:SymbolIcon Symbol="Forward" FontSize="16" />
-            </Button>
-            <Button Theme="{StaticResource TransparentButton}" Margin="0,0,6,0" VerticalAlignment="Stretch"
-                    Command="{Binding CurrentRepositoryView.RefreshCurrentDirectoryCommand}">
-                <ui:SymbolIcon Symbol="Refresh" FontSize="16" />
-            </Button>
-            <DropDownButton Width="140" Content="{Binding CurrentRepositoryView}" VerticalAlignment="Stretch" Margin="0,0,6,0">
-                <DropDownButton.Flyout>
-                    <ui:FAMenuFlyout Placement="BottomEdgeAlignedLeft" ItemsSource="{Binding RepositoryViews}">
-                        <ui:FAMenuFlyout.ItemContainerTheme>
-                            <ControlTheme TargetType="ui:MenuFlyoutItem" BasedOn="{StaticResource {x:Type ui:MenuFlyoutItem}}">
-                                <Setter Property="Command" Value="{Binding $parent[local:NavigationPaneView].((vm:NavigationPaneViewModel)DataContext).SelectRepositoryCommand}"/>
-                                <Setter Property="CommandParameter" Value="{Binding}"/>
-                            </ControlTheme>
-                        </ui:FAMenuFlyout.ItemContainerTheme>
-                    </ui:FAMenuFlyout>
-                </DropDownButton.Flyout>
-            </DropDownButton>
-            <Grid>
-                <TextBox Name="PathTextBox" Text="{Binding CurrentRepositoryView.DirectoryNavigation.CurrentItem.Directory.Path, Mode=OneWay}"
-                         LostFocus="PathTextBox_LostFocus">
-                    <TextBox.KeyBindings>
-                        <KeyBinding Command="{Binding CurrentRepositoryView.DirectoryNavigation.SetTopItemCommand}" CommandParameter="{Binding #PathTextBox.Text}" Gesture="Enter" />
-                    </TextBox.KeyBindings>
-                </TextBox>
-                <Rectangle IsVisible="{Binding !#PathTextBox.IsFocused}" Fill="Transparent">
-                    <Interaction.Behaviors>
-                        <EventTriggerBehavior EventName="Tapped">
-                            <FocusControlAction TargetControl="{Binding #PathTextBox}" />
-                            <CallMethodAction TargetObject="{Binding #PathTextBox}" MethodName="SelectAll" />
-                        </EventTriggerBehavior>
-                    </Interaction.Behaviors>
-                </Rectangle>
-            </Grid>
-        </DockPanel>
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.ThemeDictionaries>
+                <ResourceDictionary x:Key="Light">
+                    <SolidColorBrush x:Key="MainBackgroundBrush" Color="#FFFFFF"/>
+                    <LinearGradientBrush x:Key="TopBarBackgroundBrush" StartPoint="50%,0%" EndPoint="50%,100%">
+                        <GradientStop Offset="0" Color="#f3f3f3"/>
+                        <GradientStop Offset="1" Color="#f0f0f0"/>
+                    </LinearGradientBrush>
+                </ResourceDictionary>
+                <ResourceDictionary x:Key="Dark">
+                    <SolidColorBrush x:Key="MainBackgroundBrush" Color="{DynamicResource SolidBackgroundFillColorBase}"/>
+                    <SolidColorBrush x:Key="TopBarBackgroundBrush" Color="{DynamicResource SolidBackgroundFillColorQuarternary}"/>
+                </ResourceDictionary>
+            </ResourceDictionary.ThemeDictionaries>
+
+            <SolidColorBrush x:Key="DataGridColumnHeaderBackgroundBrush">Transparent</SolidColorBrush>
+            <SolidColorBrush x:Key="DataGridGridLinesBrush">Transparent</SolidColorBrush>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <UserControl.Styles>
+        <Style Selector="DataGridColumnHeader">
+            <Setter Property="SeparatorBrush" Value="{DynamicResource DividerStrokeColorDefaultBrush}" />
+        </Style>
+    </UserControl.Styles>
+
+    <DockPanel Background="{DynamicResource MainBackgroundBrush}">
+        <Border DockPanel.Dock="Top" Padding="6,8,8,8" Background="{DynamicResource TopBarBackgroundBrush}">
+            <DockPanel>
+                <Button Theme="{StaticResource TransparentButton}" Margin="0,0,6,0" VerticalAlignment="Stretch"
+                        Command="{Binding CurrentRepositoryView.DirectoryNavigation.GoBackCommand}">
+                    <ui:SymbolIcon Symbol="Back" FontSize="16" />
+                </Button>
+                <Button Theme="{StaticResource TransparentButton}" Margin="0,0,6,0" VerticalAlignment="Stretch"
+                        Command="{Binding CurrentRepositoryView.DirectoryNavigation.GoForwardCommand}">
+                    <ui:SymbolIcon Symbol="Forward" FontSize="16" />
+                </Button>
+                <Button Theme="{StaticResource TransparentButton}" Margin="0,0,6,0" VerticalAlignment="Stretch"
+                        Command="{Binding CurrentRepositoryView.RefreshCurrentDirectoryCommand}">
+                    <ui:SymbolIcon Symbol="Refresh" FontSize="16" />
+                </Button>
+                <DropDownButton Width="140" Content="{Binding CurrentRepositoryView}" VerticalAlignment="Stretch" Margin="0,0,6,0">
+                    <DropDownButton.Flyout>
+                        <ui:FAMenuFlyout Placement="BottomEdgeAlignedLeft" ItemsSource="{Binding RepositoryViews}">
+                            <ui:FAMenuFlyout.ItemContainerTheme>
+                                <ControlTheme TargetType="ui:MenuFlyoutItem" BasedOn="{StaticResource {x:Type ui:MenuFlyoutItem}}">
+                                    <Setter Property="Command" Value="{Binding $parent[local:NavigationPaneView].((vm:NavigationPaneViewModel)DataContext).SelectRepositoryCommand}"/>
+                                    <Setter Property="CommandParameter" Value="{Binding}"/>
+                                </ControlTheme>
+                            </ui:FAMenuFlyout.ItemContainerTheme>
+                        </ui:FAMenuFlyout>
+                    </DropDownButton.Flyout>
+                </DropDownButton>
+                <Grid>
+                    <TextBox Name="PathTextBox" Text="{Binding CurrentRepositoryView.DirectoryNavigation.CurrentItem.Directory.Path, Mode=OneWay}"
+                             LostFocus="PathTextBox_LostFocus">
+                        <TextBox.KeyBindings>
+                            <KeyBinding Command="{Binding CurrentRepositoryView.DirectoryNavigation.SetTopItemCommand}" CommandParameter="{Binding #PathTextBox.Text}" Gesture="Enter" />
+                        </TextBox.KeyBindings>
+                    </TextBox>
+                    <Rectangle IsVisible="{Binding !#PathTextBox.IsFocused}" Fill="Transparent">
+                        <Interaction.Behaviors>
+                            <EventTriggerBehavior EventName="Tapped">
+                                <FocusControlAction TargetControl="{Binding #PathTextBox}" />
+                                <CallMethodAction TargetObject="{Binding #PathTextBox}" MethodName="SelectAll" />
+                            </EventTriggerBehavior>
+                        </Interaction.Behaviors>
+                    </Rectangle>
+                </Grid>
+            </DockPanel>
+        </Border>
+        <Rectangle DockPanel.Dock="Top" Height="0.5" Fill="{DynamicResource ControlStrokeColorSecondaryBrush}" />
         <DockPanel DockPanel.Dock="Top" Margin="6,4,8,4" Height="32">
             <Button Theme="{StaticResource TransparentButton}" Margin="0,0,6,0" VerticalAlignment="Stretch"
                     Command="{Binding CutSelectedItemsCommand}"
@@ -80,6 +109,7 @@
                 </Interaction.Behaviors>
             </Button>
         </DockPanel>
+        <Rectangle DockPanel.Dock="Top" Height="0.5" Fill="{DynamicResource ControlStrokeColorSecondaryBrush}" />
         <local:RepositoryView DataContext="{Binding CurrentRepositoryView}"/>
     </DockPanel>
 </UserControl>
