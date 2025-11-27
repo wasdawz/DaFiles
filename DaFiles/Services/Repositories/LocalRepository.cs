@@ -82,6 +82,11 @@ public sealed class LocalRepository(Func<TopLevel?> topLevelGetter, IPlatformSto
         _platformStorage.MoveItemsToTrash(items, parentDirectory);
     }
 
+    public System.IO.Stream ReadFile(string path)
+    {
+        return System.IO.File.OpenRead(path);
+    }
+
     public string GetRootPath() => "\\";
 
     public string CombinePath(string path1, string path2) => System.IO.Path.Combine(path1, path2);

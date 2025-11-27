@@ -23,4 +23,9 @@ public sealed class DummyRepository : IRepository
     public string CombinePath(string path1, string path2) => System.IO.Path.Combine(path1, path2);
 
     public void Dispose() { }
+
+    public System.IO.Stream ReadFile(string path)
+    {
+        throw new System.NotImplementedException();
+    }
 }

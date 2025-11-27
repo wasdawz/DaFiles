@@ -65,6 +65,14 @@ public partial class OperationManager(IMessagePresenter messagePresenter) : Obse
             else
                 throw new NotImplementedException();
         }
+        else if (operation.Source.Repository is LocalRepository &&
+            operation.Destination.Repository is WebDavRepository webDavRepository)
+        {
+            if (operation.OperationType == TransferOperationType.Copy)
+                await webDavRepository.UploadItemsAsync(operation.Items, operation.Source.Repository, operation.Source, operation.Destination);
+            else
+                throw new NotImplementedException();
+        }
         else
             throw new NotImplementedException();
     }

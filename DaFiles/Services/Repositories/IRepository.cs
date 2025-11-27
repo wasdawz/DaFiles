@@ -14,4 +14,6 @@ public interface IRepository : IDisposable
     Task<Directory> ReadDirectoryAsync(string path);
 
     Task<List<DirectoryItem>> ReadDirectoryContentsAsync(string path);
+
+    System.IO.Stream ReadFile(string path);
 }
