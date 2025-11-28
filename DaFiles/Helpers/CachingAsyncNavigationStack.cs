@@ -21,8 +21,10 @@ public partial class CachingAsyncNavigationStack<TKey, TItem>(Func<TKey, Task<TI
     public bool CanGoForward => NavigationStackIndex < _navigationStack.Count - 1;
     public TItem? CurrentItem => NavigationStackIndex < 0 ? default : _navigationStack[NavigationStackIndex];
 
+    public TimeSpan CacheItemRefreshMaxDelay { get; set; } = TimeSpan.FromMilliseconds(5);
+
     public event Action? CurrentItemChanged;
-    public event Action<LoadingCachedItemEventArgs<TItem>>? LoadingCachedItem;
+    public event Action<LoadingCachedItemFailedEventArgs<TItem>>? LoadingCachedItemFailed;
 
     private readonly Func<TKey, Task<TItem?>> _asyncFactory = asyncFactory;
     private readonly Dictionary<TKey, TItem> _cache = [];
@@ -39,7 +41,7 @@ public partial class CachingAsyncNavigationStack<TKey, TItem>(Func<TKey, Task<TI
 
         if (_cache.TryGetValue(itemKey, out var item))
         {
-            if (!OnLoadingCachedItem(item))
+            if (!await TryLoadCachedItemAsync(item))
                 return;
         }
         else
@@ -59,14 +61,14 @@ public partial class CachingAsyncNavigationStack<TKey, TItem>(Func<TKey, Task<TI
     }
 
     [RelayCommand(CanExecute = nameof(CanGoBack))]
-    public void GoBack()
+    public async Task GoBackAsync()
     {
         if (NavigationStackIndex <= 0)
             return;
 
         int newIndex = NavigationStackIndex - 1;
 
-        if (!OnLoadingCachedItemFromStack(newIndex))
+        if (!await TryLoadCachedItemFromStackAsync(newIndex))
             return;
 
         NavigationStackIndex = newIndex;
@@ -74,34 +76,59 @@ public partial class CachingAsyncNavigationStack<TKey, TItem>(Func<TKey, Task<TI
     }
 
     [RelayCommand(CanExecute = nameof(CanGoForward))]
-    public void GoForward()
+    public async Task GoForwardAsync()
     {
         if (_navigationStack.Count - 1 == NavigationStackIndex)
             return;
 
         int newIndex = NavigationStackIndex + 1;
 
-        if (!OnLoadingCachedItemFromStack(newIndex))
+        if (!await TryLoadCachedItemFromStackAsync(newIndex))
             return;
 
         NavigationStackIndex = newIndex;
         OnCurrentItemChanged();
     }
 
-    private bool OnLoadingCachedItemFromStack(int navigationStackIndex)
+    private async Task<bool> TryLoadCachedItemFromStackAsync(int navigationStackIndex)
     {
-        return OnLoadingCachedItem(_navigationStack[navigationStackIndex]);
+        return await TryLoadCachedItemAsync(_navigationStack[navigationStackIndex]);
     }
 
-    private bool OnLoadingCachedItem(TItem item)
+    private async Task<bool> TryLoadCachedItemAsync(TItem item)
     {
-        LoadingCachedItemEventArgs<TItem> eventArgs = new()
+        if (item is IRefreshAsync refreshableItem)
         {
-            Item = item,
-        };
+            var refreshTask = refreshableItem.RefreshAsync();
+            var timeoutTask = Task.Delay(CacheItemRefreshMaxDelay);
 
-        LoadingCachedItem?.Invoke(eventArgs);
-        return !eventArgs.Cancel;
+            if (await Task.WhenAny(refreshTask, timeoutTask) == timeoutTask)
+            {
+                _ = HandleRefreshAsync();
+                return true;
+            }
+
+            return await HandleRefreshAsync();
+
+            async Task<bool> HandleRefreshAsync()
+            {
+                try
+                {
+                    await refreshTask;
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    LoadingCachedItemFailed?.Invoke(new()
+                    {
+                        Item = item,
+                        Error = ex
+                    });
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
     private void OnCurrentItemChanged()
@@ -111,9 +138,9 @@ public partial class CachingAsyncNavigationStack<TKey, TItem>(Func<TKey, Task<TI
     }
 }
 
-public class LoadingCachedItemEventArgs<T>
+public class LoadingCachedItemFailedEventArgs<T>
 {
     public required T Item { get; init; }
 
-    public bool Cancel { get; set; }
+    public Exception? Error { get; init; }
 }

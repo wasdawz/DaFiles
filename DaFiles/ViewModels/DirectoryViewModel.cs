@@ -4,10 +4,11 @@ using DaFiles.Models;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace DaFiles.ViewModels;
 
-public partial class DirectoryViewModel(Directory directory) : ViewModelBase, INavigationItem<string>
+public partial class DirectoryViewModel(Directory directory) : ViewModelBase, INavigationItem<string>, IRefreshAsync
 {
     public Directory Directory { get; } = directory;
 
@@ -21,5 +22,10 @@ public partial class DirectoryViewModel(Directory directory) : ViewModelBase, IN
     public IList<DirectoryItem>? GetSelectedItems()
     {
         return SelectedItems?.OfType<DirectoryItem>().ToList();
+    }
+
+    async Task IRefreshAsync.RefreshAsync()
+    {
+        await Directory.RefreshAsync();
     }
 }

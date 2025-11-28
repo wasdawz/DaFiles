@@ -27,15 +27,20 @@ public partial class RepositoryView : UserControl
         }
     }
 
-    private void PointerReleasedHandler(object? sender, PointerReleasedEventArgs e)
+    private async void PointerReleasedHandler(object? sender, PointerReleasedEventArgs e)
     {
-        if (e.Properties.PointerUpdateKind == PointerUpdateKind.XButton1Released)
-            ViewModel?.DirectoryNavigation.GoBack();
-        else if (e.Properties.PointerUpdateKind == PointerUpdateKind.XButton2Released)
-            ViewModel?.DirectoryNavigation.GoForward();
-        else
+        if (ViewModel is null)
             return;
 
-        e.Handled = true;
+        if (e.Properties.PointerUpdateKind == PointerUpdateKind.XButton1Released)
+        {
+            e.Handled = true;
+            await ViewModel.DirectoryNavigation.GoBackAsync();
+        }
+        else if (e.Properties.PointerUpdateKind == PointerUpdateKind.XButton2Released)
+        {
+            e.Handled = true;
+            await ViewModel.DirectoryNavigation.GoForwardAsync();
+        }
     }
 }

@@ -1,9 +1,8 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
-using System;
-using System.Threading.Tasks;
+﻿using CommunityToolkit.Mvvm.Input;
 using DaFiles.Helpers;
 using DaFiles.Models;
+using System;
+using System.Threading.Tasks;
 
 namespace DaFiles.ViewModels;
 
@@ -15,15 +14,17 @@ public partial class RepositoryViewModel : ViewModelBase
 
     public DirectoryViewModel? CurrentDirectory => DirectoryNavigation.CurrentItem;
 
-    [ObservableProperty]
-    private string? errorMessage;
+    public string? ErrorMessage => _errorMessage;
+
+    private string? _errorMessage;
+    private DirectoryViewModel? _directoryWithErrorMessage;
 
     public RepositoryViewModel(Repository repository)
     {
         Repository = repository;
         DirectoryNavigation = new(ReadDirectory);
-        DirectoryNavigation.CurrentItemChanged += ClearMessage;
-        DirectoryNavigation.LoadingCachedItem += DirectoryNavigation_LoadingCachedItem;
+        DirectoryNavigation.CurrentItemChanged += OnCurrentDirectoryChanged;
+        DirectoryNavigation.LoadingCachedItemFailed += DirectoryNavigation_LoadingCachedItemFailed;
     }
 
     public async Task<bool> TryEnsureInitializedAsync()
@@ -53,48 +54,54 @@ public partial class RepositoryViewModel : ViewModelBase
     [RelayCommand]
     public async Task RefreshCurrentDirectoryAsync()
     {
-        Directory? directory = CurrentDirectory?.Directory;
+        DirectoryViewModel? directoryViewModel = CurrentDirectory;
 
-        if (directory is null)
+        if (directoryViewModel is null)
         {
             if (!await TryEnsureInitializedAsync())
                 return;
 
-            directory = CurrentDirectory?.Directory;
+            directoryViewModel = CurrentDirectory;
 
-            if (directory is null)
+            if (directoryViewModel is null)
                 return;
         }
 
         try
         {
-            await directory.RefreshAsync();
+            await directoryViewModel.Directory.RefreshAsync();
         }
         catch (Exception ex)
         {
-            ErrorMessage = ex.Message;
+            SetError(ex.Message, directoryViewModel);
         }
     }
 
     public override string ToString() => Repository.Config.Name;
 
+    private void SetError(string? message, DirectoryViewModel? directory)
+    {
+        _errorMessage = message;
+        _directoryWithErrorMessage = directory;
+        OnPropertyChanged(nameof(ErrorMessage));
+    }
+
     [RelayCommand]
     private void ClearMessage()
     {
-        ErrorMessage = null;
+        SetError(null, null);
     }
 
-    private async void DirectoryNavigation_LoadingCachedItem(LoadingCachedItemEventArgs<DirectoryViewModel> e)
+    private void OnCurrentDirectoryChanged()
     {
-        try
-        {
-            await e.Item.Directory.RefreshAsync();
-        }
-        catch (Exception ex)
-        {
-            ErrorMessage = ex.Message;
-            e.Cancel = true;
-        }
+        if (_errorMessage is not null && CurrentDirectory != _directoryWithErrorMessage)
+            ClearMessage();
+    }
+
+    private void DirectoryNavigation_LoadingCachedItemFailed(LoadingCachedItemFailedEventArgs<DirectoryViewModel> e)
+    {
+        if (e.Error is not null)
+            SetError(e.Error.Message, e.Item);
     }
 
     private async Task<DirectoryViewModel?> ReadDirectory(string path)
@@ -106,7 +113,7 @@ public partial class RepositoryViewModel : ViewModelBase
         }
         catch (Exception ex)
         {
-            ErrorMessage = ex.Message;
+            SetError(ex.Message, CurrentDirectory);
             return null;
         }
     }
