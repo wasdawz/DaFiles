@@ -59,17 +59,18 @@ public class RepositoriesSettingsViewModel : ViewModelBase
 
     private static async Task<Repository?> CreateRepositoryOrSetErrorAsync(RepositoryConfigViewModel configViewModel)
     {
-        Repository repository = configViewModel.ToRepository();
+        Repository? repository = null;
 
         try
         {
+            repository = configViewModel.ToRepository();
             await repository.TestConnectionOrThrowAsync();
             return repository;
         }
         catch (Exception ex)
         {
             configViewModel.ErrorMessage = ex.Message;
-            repository.Dispose();
+            repository?.Dispose();
             return null;
         }
     }
