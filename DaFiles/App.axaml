@@ -8,6 +8,7 @@
              RequestedThemeVariant="Default">
     <Application.Resources>
 		<converters:ByteSizeToStringConverter x:Key="ByteSizeToStringConverter"/>	
+        <converters:DateTimeToLocalTimeZoneConverter x:Key="DateTimeToLocalTimeZoneConverter"/>
         <converters:DirectoryItemTypeToStringConverter x:Key="DirectoryItemTypeToStringConverter"/>
         <converters:EnumToListConverter x:Key="EnumToListConverter"/>
         <converters:SecureStringToStringConverter x:Key="SecureStringToStringConverter"/>

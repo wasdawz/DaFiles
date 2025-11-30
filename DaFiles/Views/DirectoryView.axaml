@@ -26,7 +26,7 @@
               FontFamily="Segoe UI Regular">
 		<DataGrid.Columns>
 			<DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="300" IsReadOnly="True" />
-			<DataGridTextColumn Header="Modified" Binding="{Binding ModifiedDate, StringFormat=G}" IsReadOnly="True" />
+			<DataGridTextColumn Header="Modified" Binding="{Binding ModifiedDate, StringFormat=G, Mode=OneWay, Converter={StaticResource DateTimeToLocalTimeZoneConverter}}" IsReadOnly="True" />
 			<DataGridTextColumn Header="Type" Binding="{Binding Converter={StaticResource DirectoryItemTypeToStringConverter}}" Width="100" IsReadOnly="True" />
 			<DataGridTextColumn Header="Size" Binding="{Binding Size, Mode=OneWay, Converter={StaticResource ByteSizeToStringConverter}}" Width="100" IsReadOnly="True" />
         </DataGrid.Columns>
