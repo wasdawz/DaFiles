@@ -3,6 +3,7 @@
              xmlns:converters="using:DaFiles.Converters"
              xmlns:sty="using:FluentAvalonia.Styling"
              xmlns:ui="using:FluentAvalonia.UI.Controls"
+             xmlns:uih="using:DaFiles.Helpers.UI"
              x:Class="DaFiles.App"
              RequestedThemeVariant="Default">
     <Application.Resources>
@@ -25,6 +26,22 @@
         </Style>
         <Style Selector="ui|FontIcon.iconOpenPaneMirrored">
 			<Setter Property="Glyph" Value="&#xea5b;"/>
+        </Style>
+
+        <Style Selector=":is(TopLevel)">
+            <Setter Property="(Interaction.Behaviors)">
+                <BehaviorCollectionTemplate>
+                    <BehaviorCollection>
+                        <EventTriggerBehavior EventName="Initialized">
+                            <!--
+                            Using Antialias to disable subpixel antialias which results in fringing on
+                            monitors with BGR subpixel layout (possibly also on other non-RGB layouts).
+                            -->
+                            <uih:SetGlobalPropertiesAction TextRenderingMode="Antialias"/>
+                        </EventTriggerBehavior>
+                    </BehaviorCollection>
+                </BehaviorCollectionTemplate>
+            </Setter>
         </Style>
     </Application.Styles>
 </Application>
