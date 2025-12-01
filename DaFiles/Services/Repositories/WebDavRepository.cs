@@ -57,11 +57,11 @@ public sealed class WebDavRepository : IRepository
         return items;
     }
 
-    public async Task UploadItemsAsync(IEnumerable<DirectoryItem> items, IRepository sourceRepository, Directory sourceDirectory, Directory destination)
+    public async Task UploadItemsAsync(IEnumerable<DirectoryItem> items, Directory source, Directory destination)
     {
         foreach (DirectoryItem item in items)
         {
-            await UploadItemAsync(item, sourceRepository, sourceDirectory.Path, destination.Path);
+            await UploadItemAsync(item, source.Repository, source.Path, destination.Path);
         }
     }
 
@@ -81,7 +81,7 @@ public sealed class WebDavRepository : IRepository
 
     async Task IRepository.WriteItemsAsync(IEnumerable<DirectoryItem> items, Directory source, Directory destination)
     {
-        await UploadItemsAsync(items, source.Repository, source, destination);
+        await UploadItemsAsync(items, source, destination);
     }
 
     Task<bool> IRepository.MoveItemsWithinPlatformAsync(IEnumerable<DirectoryItem> items, Directory source, Directory destination)
