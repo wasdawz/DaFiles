@@ -15,6 +15,8 @@ public interface IRepository : IDisposable
 
     Task<List<DirectoryItem>> ReadDirectoryContentsAsync(string path);
 
+    Task DeleteItemsAsync(IEnumerable<DirectoryItem> items);
+
     System.IO.Stream ReadFile(string path);
 
     Task WriteItemsAsync(IEnumerable<DirectoryItem> items, Directory source, Directory destination);

@@ -18,6 +18,11 @@ public sealed class DummyRepository : IRepository
         throw new System.NotImplementedException();
     }
 
+    public Task DeleteItemsAsync(IEnumerable<DirectoryItem> items)
+    {
+        throw new System.NotImplementedException();
+    }
+
     public string GetRootPath() => "/";
 
     public string CombinePath(string path1, string path2) => System.IO.Path.Combine(path1, path2);

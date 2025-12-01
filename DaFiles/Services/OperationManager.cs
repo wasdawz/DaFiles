@@ -72,10 +72,13 @@ public partial class OperationManager(IMessagePresenter messagePresenter) : Obse
         if (transferredWithinPlatform)
             return;
 
-        if (operationType == TransferOperationType.Copy)
+        if (operationType is TransferOperationType.Copy or TransferOperationType.Cut)
             await destination.Repository.WriteItemsAsync(items, source, destination);
         else
             throw new NotImplementedException();
+
+        if (operationType == TransferOperationType.Cut)
+            await source.Repository.DeleteItemsAsync(items);
     }
 
     private static async Task RunDeleteOperationAsync(DeleteOperation operation)
@@ -83,7 +86,7 @@ public partial class OperationManager(IMessagePresenter messagePresenter) : Obse
         if (operation.ParentDirectory.Repository is LocalRepository localRepository)
         {
             if (operation.Permanent)
-                await LocalRepository.DeleteItemsAsync(operation.Items);
+                await localRepository.DeleteItemsAsync(operation.Items);
             else
                 localRepository.MoveItemsToTrash(operation.Items, operation.ParentDirectory);
         }

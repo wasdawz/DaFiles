@@ -65,6 +65,11 @@ public sealed class WebDavRepository : IRepository
         }
     }
 
+    public Task DeleteItemsAsync(IEnumerable<DirectoryItem> items)
+    {
+        throw new NotImplementedException();
+    }
+
     public System.IO.Stream ReadFile(string path)
     {
         throw new NotImplementedException();

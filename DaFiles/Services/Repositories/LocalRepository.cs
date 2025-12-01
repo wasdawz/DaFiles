@@ -66,7 +66,7 @@ public sealed class LocalRepository(Func<TopLevel?> topLevelGetter, IPlatformSto
         }
     }
 
-    public static async Task DeleteItemsAsync(IEnumerable<DirectoryItem> items)
+    public async Task DeleteItemsAsync(IEnumerable<DirectoryItem> items)
     {
         foreach (DirectoryItem item in items)
         {
