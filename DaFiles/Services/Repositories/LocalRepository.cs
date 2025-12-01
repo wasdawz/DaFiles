@@ -91,6 +91,35 @@ public sealed class LocalRepository(Func<TopLevel?> topLevelGetter, IPlatformSto
 
     public string CombinePath(string path1, string path2) => System.IO.Path.Combine(path1, path2);
 
+    Task IRepository.WriteItemsAsync(IEnumerable<DirectoryItem> items, Directory source, Directory destination)
+    {
+        throw new NotImplementedException();
+    }
+
+    async Task<bool> IRepository.MoveItemsWithinPlatformAsync(IEnumerable<DirectoryItem> items, Directory source, Directory destination)
+    {
+        if (source.Repository is not LocalRepository ||
+            destination.Repository is not LocalRepository)
+        {
+            return false;
+        }
+
+        await MoveItemsAsync(items, destination);
+        return true;
+    }
+
+    async Task<bool> IRepository.CopyItemsWithinPlatformAsync(IEnumerable<DirectoryItem> items, Directory source, Directory destination)
+    {
+        if (source.Repository is not LocalRepository ||
+            destination.Repository is not LocalRepository)
+        {
+            return false;
+        }
+
+        await CopyItemsAsync(items, destination);
+        return true;
+    }
+
     private async Task CopyItemAsync(IStorageItem item, string destinationFolderPath)
     {
         if (item is IStorageFolder storageFolder)

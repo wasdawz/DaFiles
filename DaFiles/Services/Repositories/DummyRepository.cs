@@ -28,4 +28,19 @@ public sealed class DummyRepository : IRepository
     {
         throw new System.NotImplementedException();
     }
+
+    Task IRepository.WriteItemsAsync(IEnumerable<DirectoryItem> items, Directory source, Directory destination)
+    {
+        throw new System.NotImplementedException();
+    }
+
+    Task<bool> IRepository.MoveItemsWithinPlatformAsync(IEnumerable<DirectoryItem> items, Directory source, Directory destination)
+    {
+        throw new System.NotImplementedException();
+    }
+
+    Task<bool> IRepository.CopyItemsWithinPlatformAsync(IEnumerable<DirectoryItem> items, Directory source, Directory destination)
+    {
+        throw new System.NotImplementedException();
+    }
 }

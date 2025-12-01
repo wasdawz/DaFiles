@@ -79,6 +79,21 @@ public sealed class WebDavRepository : IRepository
 
     public void Dispose() => _client.Dispose();
 
+    async Task IRepository.WriteItemsAsync(IEnumerable<DirectoryItem> items, Directory source, Directory destination)
+    {
+        await UploadItemsAsync(items, source.Repository, source, destination);
+    }
+
+    Task<bool> IRepository.MoveItemsWithinPlatformAsync(IEnumerable<DirectoryItem> items, Directory source, Directory destination)
+    {
+        throw new NotImplementedException();
+    }
+
+    Task<bool> IRepository.CopyItemsWithinPlatformAsync(IEnumerable<DirectoryItem> items, Directory source, Directory destination)
+    {
+        throw new NotImplementedException();
+    }
+
     private async Task UploadItemAsync(DirectoryItem item, IRepository sourceRepository, string sourceFolderPath, string destinationFolderPath)
     {
         string itemPath = sourceRepository.CombinePath(sourceFolderPath, item.Name);

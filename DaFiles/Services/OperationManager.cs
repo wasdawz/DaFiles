@@ -52,27 +52,28 @@ public partial class OperationManager(IMessagePresenter messagePresenter) : Obse
 
     private static async Task RunTransferOperationAsync(TransferOperation operation)
     {
-        if (operation.Destination is null)
+        var items = operation.Items;
+        var source = operation.Source;
+        var destination = operation.Destination;
+        var operationType = operation.OperationType;
+
+        if (destination is null)
             return;
 
-        if (operation.Source.Repository is LocalRepository localSourceRepository &&
-            operation.Destination.Repository is LocalRepository)
-        {
-            if (operation.OperationType == TransferOperationType.Cut)
-                await localSourceRepository.MoveItemsAsync(operation.Items, operation.Destination);
-            else if (operation.OperationType == TransferOperationType.Copy)
-                await localSourceRepository.CopyItemsAsync(operation.Items, operation.Destination);
-            else
-                throw new NotImplementedException();
-        }
-        else if (operation.Source.Repository is LocalRepository &&
-            operation.Destination.Repository is WebDavRepository webDavRepository)
-        {
-            if (operation.OperationType == TransferOperationType.Copy)
-                await webDavRepository.UploadItemsAsync(operation.Items, operation.Source.Repository, operation.Source, operation.Destination);
-            else
-                throw new NotImplementedException();
-        }
+        bool transferredWithinPlatform;
+
+        if (operationType == TransferOperationType.Cut)
+            transferredWithinPlatform = await source.Repository.MoveItemsWithinPlatformAsync(items, source, destination);
+        else if (operationType == TransferOperationType.Copy)
+            transferredWithinPlatform = await source.Repository.CopyItemsWithinPlatformAsync(items, source, destination);
+        else
+            throw new NotImplementedException();
+
+        if (transferredWithinPlatform)
+            return;
+
+        if (operationType == TransferOperationType.Copy)
+            await destination.Repository.WriteItemsAsync(items, source, destination);
         else
             throw new NotImplementedException();
     }
